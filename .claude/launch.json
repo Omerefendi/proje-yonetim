@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "backend",
+      "runtimeExecutable": "java",
+      "runtimeArgs": ["-Djava.io.tmpdir=C:\\Temp", "-jar", "backend/target/proje-yonetim-1.0.0.jar"],
+      "port": 8080
+    },
+    {
+      "name": "frontend",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "5500", "--directory", "frontend"],
+      "port": 5500
+    }
+  ]
+}

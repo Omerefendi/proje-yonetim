@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kullanıcı Yönetimi | Proje Yönetim Sistemi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .role-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: var(--radius-small);
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .role-ADMIN {
+            background-color: var(--color-danger-subtle);
+            color: var(--color-danger);
+        }
+
+        .role-MANAGER {
+            background-color: var(--color-info-subtle);
+            color: var(--color-info);
+        }
+
+        .role-USER {
+            background-color: var(--color-success-subtle);
+            color: var(--color-success);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                    </svg>
+                    <span>Proje Yönetim</span>
+                </div>
+            </div>
+
+            <div class="sidebar-content">
+                <div class="nav-section">
+                    <div class="nav-section-title">Görünümler</div>
+                    <a href="index.html" class="nav-item">Dashboard</a>
+                    <a href="projects.html" class="nav-item">Projeler</a>
+                    <a href="timeline.html" class="nav-item">Zaman Çizelgesi</a>
+                    <a href="reports.html" class="nav-item">Raporlar</a>
+                </div>
+
+                <div class="nav-section admin-only">
+                    <div class="nav-section-title">Yönetim</div>
+                    <a href="users.html" class="nav-item active">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                        Kullanıcılar
+                    </a>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="user-avatar" id="userAvatarText">U</div>
+                <div class="user-info">
+                    <div class="user-name" id="sidebarUserName">Kullanıcı Adı</div>
+                    <div class="user-role" id="sidebarUserRole">Rol</div>
+                </div>
+                <button class="logout-btn" id="logoutBtn"><svg viewBox="0 0 24 24" width="18" height="18" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg></button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="main-header">
+                <h1 class="header-title">Kullanıcı Yönetimi</h1>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="openUserModal()">
+                        Yeni Kullanıcı Ekle
+                    </button>
+                </div>
+            </header>
+
+            <div class="content-body">
+                <div class="card">
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>AD SOYAD</th>
+                                    <th>KULLANICI ADI</th>
+                                    <th>E-POSTA</th>
+                                    <th>ROL</th>
+                                    <th>DURUM</th>
+                                    <th>İŞLEMLER</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                <tr>
+                                    <td colspan="6" style="text-align: center;">Yükleniyor...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Create/Edit User Modal -->
+    <div class="modal-overlay" id="userModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="userModalTitle">Kullanıcı Ekle/Düzenle</h2>
+                <button class="modal-close" data-dismiss="modal"><svg viewBox="0 0 24 24" width="24" height="24"
+                        fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg></button>
+            </div>
+            <div class="modal-body">
+                <form id="userForm">
+                    <input type="hidden" id="u_id">
+                    <div class="form-group">
+                        <label class="form-label">Ad Soyad <span style="color:var(--color-danger)">*</span></label>
+                        <input type="text" id="u_fullName" class="form-control" required>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div class="form-group">
+                            <label class="form-label">Kullanıcı Adı <span style="color:var(--color-danger)">*</span>
+                                <small>(Düzenlenemez)</small></label>
+                            <input type="text" id="u_username" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">E-Posta</label>
+                            <input type="email" id="u_email" class="form-control">
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div class="form-group">
+                            <label class="form-label">Şifre <span style="color:var(--color-danger)"
+                                    id="reqPasswordStar">*</span></label>
+                            <input type="password" id="u_password" class="form-control">
+                            <small id="pwHint"
+                                style="display:none; color:var(--color-text-subtle); margin-top:4px;">Değiştirmek
+                                istemiyorsanız boş bırakın</small>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Rol & Yetki</label>
+                            <select id="u_role" class="form-control">
+                                <option value="USER">Kullanıcı</option>
+                                <option value="MANAGER">Proje Müdürü</option>
+                                <option value="ADMIN">Sistem Yöneticisi</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" id="activeStatusGroup" style="display: none;">
+                        <label class="form-label">
+                            <input type="checkbox" id="u_active"> Hesap Aktif
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-dismiss="modal">İptal</button>
+                <button class="btn btn-primary" id="saveUserBtn">Kaydet</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        // Cache users by ID to avoid JSON.stringify XSS in onclick
+        let usersCache = {};
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Check admin access
+            const currentUser = getUser();
+            if (!currentUser || currentUser.role !== 'ADMIN') {
+                alert("Bu sayfaya erişim yetkiniz yok!");
+                window.location.href = 'index.html';
+                return;
+            }
+
+            await loadUsers();
+
+            document.getElementById('saveUserBtn').addEventListener('click', async () => {
+                const id = document.getElementById('u_id').value;
+                const username = document.getElementById('u_username').value;
+                const fullName = document.getElementById('u_fullName').value;
+                const password = document.getElementById('u_password').value;
+
+                if (!fullName) return alert('Ad Soyad gerekli.');
+                if (!id && (!username || !password)) return alert('Kullanıcı adı ve şifre yeni kayıtlarda zorunludur.');
+
+                const reqBody = {
+                    fullName,
+                    email: document.getElementById('u_email').value,
+                    role: document.getElementById('u_role').value
+                };
+
+                if (id) {
+                    reqBody.active = document.getElementById('u_active').checked;
+                    if (password) reqBody.password = password; // Only send password if changed
+                } else {
+                    reqBody.username = username;
+                    reqBody.password = password;
+                }
+
+                try {
+                    if (id) {
+                        await apiCall(`/admin/users/${id}`, { method: 'PUT', body: JSON.stringify(reqBody) });
+                    } else {
+                        await apiCall(`/admin/users`, { method: 'POST', body: JSON.stringify(reqBody) });
+                    }
+                    ModalManager.close('userModal');
+                    await loadUsers();
+                } catch (error) {
+                    alert('Hata: ' + error.message);
+                }
+            });
+        });
+
+        async function loadUsers() {
+            try {
+                const res = await apiCall('/users');
+                const users = res.data;
+                const tbody = document.getElementById('usersTableBody');
+
+                // Build users cache for safe onclick handling
+                usersCache = {};
+                users.forEach(u => { usersCache[u.id] = u; });
+
+                let html = '';
+                users.forEach(u => {
+                    const roleLabel = u.role === 'ADMIN' ? 'Sistem Yön.' : u.role === 'MANAGER' ? 'Proje Müd.' : 'Kullanıcı';
+                    html += `
+                    <tr>
+                        <td style="font-weight: 500;">
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <div class="user-avatar" style="width:24px; height:24px; font-size:11px;">${escapeHtml(u.fullName.charAt(0))}</div>
+                                ${escapeHtml(u.fullName)}
+                            </div>
+                        </td>
+                        <td>${escapeHtml(u.username)}</td>
+                        <td>${escapeHtml(u.email || '-')}</td>
+                        <td><span class="role-badge role-${escapeHtml(u.role)}">${escapeHtml(roleLabel)}</span></td>
+                        <td>
+                            ${u.active ?
+                            '<span class="badge status-done">Aktif</span>' :
+                            '<span class="badge" style="background-color: var(--color-surface-hover);">Pasif</span>'}
+                        </td>
+                        <td>
+                            <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 12px;" data-user-id="${u.id}" onclick="openUserModal(usersCache[this.dataset.userId])">Düzenle</button>
+                        </td>
+                    </tr>
+                    `;
+                });
+                tbody.innerHTML = html;
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        function openUserModal(user = null) {
+            document.getElementById('userForm').reset();
+            const title = document.getElementById('userModalTitle');
+            const usernameInput = document.getElementById('u_username');
+            const pwReq = document.getElementById('reqPasswordStar');
+            const pwHint = document.getElementById('pwHint');
+            const activeGroup = document.getElementById('activeStatusGroup');
+
+            if (user) {
+                title.textContent = 'Kullanıcı Düzenle';
+                document.getElementById('u_id').value = user.id;
+                document.getElementById('u_fullName').value = user.fullName;
+                usernameInput.value = user.username;
+                usernameInput.disabled = true;
+                document.getElementById('u_email').value = user.email || '';
+                document.getElementById('u_role').value = user.role;
+
+                pwReq.style.display = 'none';
+                pwHint.style.display = 'block';
+
+                activeGroup.style.display = 'block';
+                document.getElementById('u_active').checked = user.active;
+            } else {
+                title.textContent = 'Yeni Kullanıcı Oluştur';
+                document.getElementById('u_id').value = '';
+                usernameInput.disabled = false;
+
+                pwReq.style.display = 'inline';
+                pwHint.style.display = 'none';
+                activeGroup.style.display = 'none';
+            }
+
+            ModalManager.open('userModal');
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş Yap | Proje Yönetim Sistemi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body.login-page {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: var(--color-background-subtle);
+            margin: 0;
+        }
+
+        .login-container {
+            background-color: var(--color-surface);
+            padding: 40px;
+            border-radius: var(--radius-large);
+            box-shadow: var(--shadow-overlay);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-logo {
+            color: var(--color-primary);
+            margin-bottom: 24px;
+        }
+
+        .login-logo svg {
+            width: 48px;
+            height: 48px;
+        }
+
+        .login-title {
+            margin: 0 0 8px 0;
+            color: var(--color-text);
+            font-size: 24px;
+        }
+
+        .login-subtitle {
+            margin: 0 0 32px 0;
+            color: var(--color-text-subtle);
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--color-text-subtle);
+            font-size: 14px;
+            text-align: left;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-medium);
+            font-size: 14px;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+            background-color: var(--color-surface);
+            color: var(--color-text);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--color-primary);
+            color: var(--color-text-inverse);
+            border: none;
+            border-radius: var(--radius-medium);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-login:hover {
+            background-color: var(--color-primary-hover);
+        }
+
+        .error-message {
+            color: var(--color-danger);
+            font-size: 14px;
+            margin-top: 16px;
+            display: none;
+            text-align: left;
+            padding: 10px;
+            background-color: var(--color-danger-subtle);
+            border-radius: var(--radius-medium);
+            border-left: 4px solid var(--color-danger);
+        }
+
+        .demo-credentials {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--color-border);
+            font-size: 12px;
+            color: var(--color-text-subtlest);
+            text-align: left;
+        }
+        
+        .demo-credentials h4 {
+            margin: 0 0 8px 0;
+            color: var(--color-text-subtle);
+        }
+        
+        .demo-credentials ul {
+            margin: 0;
+            padding-left: 16px;
+        }
+    </style>
+</head>
+<body class="login-page">
+
+    <div class="login-container">
+        <div class="login-logo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+            </svg>
+        </div>
+        <h1 class="login-title">Proje Yönetim Sistemi</h1>
+        <p class="login-subtitle">Devam etmek için giriş yapın</p>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username" class="form-label">Kullanıcı Adı</label>
+                <input type="text" id="username" class="form-input" required placeholder="Kullanıcı adınızı girin">
+            </div>
+            
+            <div class="form-group">
+                <label for="password" class="form-label">Şifre</label>
+                <input type="password" id="password" class="form-input" required placeholder="Şifrenizi girin">
+            </div>
+
+            <div id="errorMessage" class="error-message"></div>
+
+            <button type="submit" class="btn-login" id="loginBtn">Giriş Yap</button>
+        </form>
+
+        <div class="demo-credentials">
+            <h4>Sistem Kullanıcıları:</h4>
+            <ul>
+                <li><strong>Admin:</strong> admin / admin123</li>
+                <li><strong>Yönetici:</strong> manager / manager123</li>
+                <li><strong>Kullanıcı:</strong> ahmet / ahmet123</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        // Check if already logged in with a valid token
+        const existingToken = localStorage.getItem('token');
+        if (existingToken && existingToken.split('.').length === 3) {
+            try {
+                const payload = JSON.parse(atob(existingToken.split('.')[1]));
+                if (payload.exp && payload.exp * 1000 > Date.now()) {
+                    window.location.href = 'index.html';
+                } else {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                }
+            } catch (e) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+            }
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            const errorMsg = document.getElementById('errorMessage');
+            const loginBtn = document.getElementById('loginBtn');
+            const originalBtnText = loginBtn.textContent;
+            
+            if (!usernameInput.value || !passwordInput.value) {
+                errorMsg.textContent = 'Lütfen kullanıcı adı ve şifre girin.';
+                errorMsg.style.display = 'block';
+                return;
+            }
+
+            try {
+                loginBtn.textContent = 'Giriş Yapılıyor...';
+                loginBtn.disabled = true;
+                errorMsg.style.display = 'none';
+
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: usernameInput.value,
+                        password: passwordInput.value
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    // Save token and user info
+                    localStorage.setItem('token', data.data.token);
+                    localStorage.setItem('user', JSON.stringify(data.data));
+                    
+                    // Redirect to dashboard
+                    window.location.href = 'index.html';
+                } else {
+                    errorMsg.textContent = data.message || 'Giriş başarısız. Lütfen bilgilerinizi kontrol edin.';
+                    errorMsg.style.display = 'block';
+                    loginBtn.textContent = originalBtnText;
+                    loginBtn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                errorMsg.textContent = 'Sunucuya bağlanılamadı. Lütfen API\'nin çalıştığından emin olun.';
+                errorMsg.style.display = 'block';
+                loginBtn.textContent = originalBtnText;
+                loginBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

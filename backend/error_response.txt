@@ -1,0 +1,32 @@
+* Host localhost:8080 was resolved.
+* IPv6: ::1
+* IPv4: 127.0.0.1
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0*   Trying [::1]:8080...
+* Established connection to localhost (::1 port 8080) from ::1 port 56539 
+* using HTTP/1.x
+> GET /api/projects HTTP/1.1
+> Host: localhost:8080
+> User-Agent: curl/8.16.0
+> Accept: */*
+> Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc3MzQ5NTc5MSwiZXhwIjoxNzczNTgyMTkxfQ.NLFs3L-oP_iMK_RO086tM3aGccOxRTZzeXdYc_r49oM
+> 
+* Request completely sent off
+< HTTP/1.1 500 
+< Vary: Origin
+< Vary: Access-Control-Request-Method
+< Vary: Access-Control-Request-Headers
+< X-Content-Type-Options: nosniff
+< X-XSS-Protection: 0
+< Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+< Pragma: no-cache
+< Expires: 0
+< Content-Type: application/json
+< Transfer-Encoding: chunked
+< Date: Sat, 14 Mar 2026 13:43:11 GMT
+< Connection: close
+< 
+{ [119 bytes data]
+100   113    0   113    0     0   3508      0 --:--:-- --:--:-- --:--:--  3531{"timestamp":"2026-03-14T13:43:11.205+00:00","status":500,"error":"Internal Server Error","path":"/api/projects"}
+* shutting down connection #0

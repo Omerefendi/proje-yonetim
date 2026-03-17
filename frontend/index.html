@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Proje Yönetim Sistemi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                    </svg>
+                    <span>Proje Yönetim</span>
+                </div>
+            </div>
+
+            <div class="sidebar-content">
+                <div class="nav-section">
+                    <div class="nav-section-title">Görünümler</div>
+                    <a href="index.html" class="nav-item active">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                        </svg>
+                        Dashboard
+                    </a>
+                    <a href="projects.html" class="nav-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z">
+                            </path>
+                        </svg>
+                        Projeler
+                    </a>
+                    <a href="timeline.html" class="nav-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        Zaman Çizelgesi
+                    </a>
+                    <a href="reports.html" class="nav-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                        </svg>
+                        Raporlar
+                    </a>
+                </div>
+
+                <div class="nav-section admin-only">
+                    <div class="nav-section-title">Yönetim</div>
+                    <a href="users.html" class="nav-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                        Kullanıcılar
+                    </a>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="user-avatar" id="userAvatarText">U</div>
+                <div class="user-info">
+                    <div class="user-name" id="sidebarUserName">Kullanıcı Adı</div>
+                    <div class="user-role" id="sidebarUserRole">Rol</div>
+                </div>
+                <button class="logout-btn" id="logoutBtn" title="Çıkış Yap">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="main-header">
+                <h1 class="header-title">Dashboard</h1>
+                <div class="header-actions">
+                    <a href="projects.html" class="btn btn-primary">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Yeni Proje
+                    </a>
+                </div>
+            </header>
+
+            <div class="content-body" id="dashboardContent">
+                <!-- Stats Grid -->
+                <div class="dashboard-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z">
+                                </path>
+                            </svg>
+                        </div>
+                        <div class="stat-details">
+                            <div class="stat-title">Toplam Proje</div>
+                            <div class="stat-value" id="statTotalProjects">-</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon"
+                            style="background-color: var(--color-success-subtle); color: var(--color-success);">
+                            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                        </div>
+                        <div class="stat-details">
+                            <div class="stat-title">Tamamlanan</div>
+                            <div class="stat-value" id="statCompletedProjects">-</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon"
+                            style="background-color: var(--color-warning-subtle); color: var(--color-warning);">
+                            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                        </div>
+                        <div class="stat-details">
+                            <div class="stat-title">Devam Eden</div>
+                            <div class="stat-value" id="statInProgressProjects">-</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon"
+                            style="background-color: #fff0f0; color: #de350b;">
+                            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="10" y1="15" x2="10" y2="9"></line>
+                                <line x1="14" y1="15" x2="14" y2="9"></line>
+                            </svg>
+                        </div>
+                        <div class="stat-details">
+                            <div class="stat-title">Beklemede</div>
+                            <div class="stat-value" id="statOnHoldProjects">-</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon"
+                            style="background-color: #FFF0B3; color: #FF991F;">
+                            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                        </div>
+                        <div class="stat-details">
+                            <div class="stat-title">Planlama</div>
+                            <div class="stat-value" id="statPlanningProjects">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Area -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                    <div class="card" style="padding: 10px 14px; height: 240px;">
+                        <h3 style="margin-bottom: 8px; font-size: 13px;">Proje Durumları</h3>
+                        <div style="position: relative; height: calc(100% - 28px);">
+                            <canvas id="tasksChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card" style="padding: 10px 14px; height: 240px;">
+                        <h3 style="margin-bottom: 8px; font-size: 13px;">Proje Öncelikleri</h3>
+                        <div style="position: relative; height: calc(100% - 28px);">
+                            <canvas id="priorityChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Proje Görev Yükü Section -->
+                <div class="card" style="padding: 16px 18px; margin-top: 14px;">
+                    <h3 style="margin-bottom: 12px; font-size: 14px; font-weight: 600;">Proje Görev - Alt Görev Dağılımı</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div style="position: relative; height: 280px;" id="projectWorkloadChartContainer">
+                            <canvas id="projectWorkloadChart"></canvas>
+                        </div>
+                        <div id="projectWorkloadTableContainer" style="overflow-x: auto;">
+                            <!-- Table will be rendered by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Proje Sorumlusu Section -->
+                <div class="card" style="padding: 16px 18px; margin-top: 14px;">
+                    <h3 style="margin-bottom: 12px; font-size: 14px; font-weight: 600;">Proje Sorumlusu</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div style="position: relative; height: 280px;" id="ownerChartContainer">
+                            <canvas id="ownerChart"></canvas>
+                        </div>
+                        <div id="ownerTableContainer" style="overflow-x: auto;">
+                            <!-- Table will be rendered by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Personel Görev Yükü Section -->
+                <div class="card" style="padding: 16px 18px; margin-top: 14px;">
+                    <h3 style="margin-bottom: 12px; font-size: 14px; font-weight: 600;">Personel Görev Yükü (Görev-Alt Görev)</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div style="position: relative; height: 280px;">
+                            <canvas id="workloadChart"></canvas>
+                        </div>
+                        <div id="workloadTableContainer" style="overflow-x: auto;">
+                            <!-- Table will be rendered by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        // Register datalabels plugin globally
+        Chart.register(ChartDataLabels);
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await apiCall('/dashboard/stats');
+                const stats = response.data;
+
+                // Update text stats
+                document.getElementById('statTotalProjects').textContent = stats.totalProjects;
+                document.getElementById('statCompletedProjects').textContent = stats.completedProjects;
+                document.getElementById('statInProgressProjects').textContent = stats.inProgressProjects;
+                document.getElementById('statOnHoldProjects').textContent = stats.onHoldProjects;
+                document.getElementById('statPlanningProjects').textContent = stats.planningProjects;
+
+                // Render Project Workload Chart (Horizontal Stacked Bar by Status)
+                const pwData = stats.projectWorkloads || [];
+                const pwCtx = document.getElementById('projectWorkloadChart').getContext('2d');
+                const pwChartHeight = Math.max(280, pwData.length * 40);
+                document.getElementById('projectWorkloadChartContainer').style.height = pwChartHeight + 'px';
+                new Chart(pwCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: pwData.map(p => p.projectName),
+                        datasets: [
+                            {
+                                label: 'Görev',
+                                data: pwData.map(p => p.taskCount),
+                                backgroundColor: '#0052CC',
+                                borderRadius: 2
+                            },
+                            {
+                                label: 'Alt Görev',
+                                data: pwData.map(p => p.subTaskCount),
+                                backgroundColor: '#FF991F',
+                                borderRadius: 2
+                            }
+                        ]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: { stacked: true, beginAtZero: true, ticks: { stepSize: 1 } },
+                            y: { stacked: true }
+                        },
+                        plugins: {
+                            legend: { display: true, position: 'top', labels: { boxWidth: 12, font: { size: 10 }, padding: 10 } },
+                            datalabels: {
+                                anchor: 'center', align: 'center',
+                                color: '#fff', font: { weight: 'bold', size: 11 },
+                                display: (ctx) => ctx.dataset.data[ctx.dataIndex] > 0
+                            }
+                        }
+                    }
+                });
+
+                // Render Project Workload Table
+                const pwTableContainer = document.getElementById('projectWorkloadTableContainer');
+                if (pwData.length > 0) {
+                    const statusLabels = { PLANNING: 'Planlama', IN_PROGRESS: 'Devam Ediyor', ON_HOLD: 'Beklemede', COMPLETED: 'Tamamlandı' };
+                    const statusColors = { PLANNING: '#6554C0', IN_PROGRESS: '#0052CC', ON_HOLD: '#FF991F', COMPLETED: '#00875A' };
+                    let pwTableHtml = `
+                    <table style="width:100%; border-collapse:collapse; font-size:12px;">
+                        <thead>
+                            <tr style="border-bottom:2px solid #dfe1e6; text-align:left;">
+                                <th style="padding:8px 6px; font-weight:600; color:#5e6c84;">Proje</th>
+                                <th style="padding:8px 6px; text-align:center; font-weight:600; color:#5e6c84;">Durum</th>
+                                <th style="padding:8px 6px; text-align:center; font-weight:600; color:#0052CC;">Görev</th>
+                                <th style="padding:8px 6px; text-align:center; font-weight:600; color:#FF991F;">Alt Görev</th>
+                                <th style="padding:8px 6px; text-align:center; font-weight:600; color:#172b4d;">Toplam</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+                    pwData.forEach(p => {
+                        const total = (p.taskCount || 0) + (p.subTaskCount || 0);
+                        const sLabel = statusLabels[p.projectStatus] || p.projectStatus;
+                        const sColor = statusColors[p.projectStatus] || '#5e6c84';
+                        const dotColor = p.color || sColor;
+                        pwTableHtml += `
+                            <tr style="border-bottom:1px solid #ebecf0; cursor:pointer;" onclick="window.location.href='project-detail.html?id=${p.projectId}'">
+                                <td style="padding:7px 6px; font-weight:500;">
+                                    <div style="display:flex; align-items:center; gap:6px;">
+                                        <div style="width:10px; height:10px; border-radius:50%; background:${dotColor}; flex-shrink:0;"></div>
+                                        <span>${p.projectName}</span>
+                                    </div>
+                                </td>
+                                <td style="padding:7px 6px; text-align:center;">
+                                    <span style="background:${sColor}15; color:${sColor}; padding:2px 8px; border-radius:10px; font-weight:600; font-size:11px;">${sLabel}</span>
+                                </td>
+                                <td style="padding:7px 6px; text-align:center;">
+                                    ${p.taskCount > 0 ? '<span style="background:#DEEBFF; color:#0052CC; padding:2px 8px; border-radius:10px; font-weight:600;">' + p.taskCount + '</span>' : '<span style="color:#c1c7d0;">0</span>'}
+                                </td>
+                                <td style="padding:7px 6px; text-align:center;">
+                                    ${p.subTaskCount > 0 ? '<span style="background:#FFF0B3; color:#FF8B00; padding:2px 8px; border-radius:10px; font-weight:600;">' + p.subTaskCount + '</span>' : '<span style="color:#c1c7d0;">0</span>'}
+                                </td>
+                                <td style="padding:7px 6px; text-align:center; font-weight:700; color:#172b4d;">${total}</td>
+                            </tr>`;
+                    });
+                    pwTableHtml += `</tbody></table>`;
+                    pwTableContainer.innerHTML = pwTableHtml;
+                } else {
+                    pwTableContainer.innerHTML = '<div style="color:#97a0af; text-align:center; padding:40px 0; font-size:13px;">Henüz proje bulunmuyor</div>';
+                }
+
+                // Render Workload Chart (Horizontal Stacked Bar by Status)
+                const wlCtx = document.getElementById('workloadChart').getContext('2d');
+                const wlLabels = stats.userWorkloads.map(u => u.fullName);
+                new Chart(wlCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: wlLabels,
+                        datasets: [
+                            {
+                                label: 'Yapılacak',
+                                data: stats.userWorkloads.map(u => u.todo),
+                                backgroundColor: '#6554C0',
+                                borderRadius: 2
+                            },
+                            {
+                                label: 'Devam Ediyor',
+                                data: stats.userWorkloads.map(u => u.inProgress),
+                                backgroundColor: '#0052CC',
+                                borderRadius: 2
+                            },
+                            {
+                                label: 'Planlandı',
+                                data: stats.userWorkloads.map(u => u.inReview),
+                                backgroundColor: '#FF991F',
+                                borderRadius: 2
+                            },
+                            {
+                                label: 'Tamamlandı',
+                                data: stats.userWorkloads.map(u => u.completed),
+                                backgroundColor: '#00875A',
+                                borderRadius: 2
+                            }
+                        ]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: { stacked: true, beginAtZero: true, ticks: { stepSize: 1 } },
+                            y: { stacked: true }
+                        },
+                        plugins: {
+                            legend: { display: true, position: 'top', labels: { boxWidth: 12, font: { size: 10 }, padding: 10 } },
+                            datalabels: {
+                                anchor: 'center', align: 'center',
+                                color: '#fff', font: { weight: 'bold', size: 11 },
+                                display: (ctx) => ctx.dataset.data[ctx.dataIndex] > 0
+                            }
+                        }
+                    }
+                });
+
+                // Render Workload Table
+                const tableContainer = document.getElementById('workloadTableContainer');
+                if (stats.userWorkloads.length > 0) {
+                    let tableHtml = `
+                    <table style="width:100%; border-collapse:collapse; font-size:12px;">
+                        <thead>
+                            <tr style="border-bottom:2px solid #dfe1e6; text-align:left;">
+                                <th style="padding:8px 6px; font-weight:600; color:#5e6c84;">Personel</th>
+                                <th style="padding:8px 6px; text-align:center; font-weight:600; color:#6554C0;">Yapılacak</th>
+                                <th style="padding:8px 6px; text-align:center; font-weight:600; color:#0052CC;">Devam</th>
+                                <th style="padding:8px 6px; text-align:center; font-weight:600; color:#FF991F;">Planlandı</th>
+                                <th style="padding:8px 6px; text-align:center; font-weight:600; color:#00875A;">Tamamlandı</th>
+                                <th style="padding:8px 6px; text-align:center; font-weight:600; color:#172b4d;">Toplam</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+                    stats.userWorkloads.forEach(u => {
+                        const total = (u.todo || 0) + (u.inProgress || 0) + (u.inReview || 0) + (u.completed || 0);
+                        tableHtml += `
+                            <tr style="border-bottom:1px solid #ebecf0;">
+                                <td style="padding:7px 6px; font-weight:500;">
+                                    <div style="display:flex; align-items:center; gap:6px;">
+                                        <div style="width:26px; height:26px; border-radius:50%; background:#0052CC; color:#fff; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; flex-shrink:0;">
+                                            ${u.fullName.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase()}
+                                        </div>
+                                        <span>${u.fullName}</span>
+                                    </div>
+                                </td>
+                                <td style="padding:7px 6px; text-align:center;">
+                                    ${u.todo > 0 ? '<span style="background:#EAE6FF; color:#6554C0; padding:2px 8px; border-radius:10px; font-weight:600;">' + u.todo + '</span>' : '<span style="color:#c1c7d0;">0</span>'}
+                                </td>
+                                <td style="padding:7px 6px; text-align:center;">
+                                    ${u.inProgress > 0 ? '<span style="background:#DEEBFF; color:#0052CC; padding:2px 8px; border-radius:10px; font-weight:600;">' + u.inProgress + '</span>' : '<span style="color:#c1c7d0;">0</span>'}
+                                </td>
+                                <td style="padding:7px 6px; text-align:center;">
+                                    ${u.inReview > 0 ? '<span style="background:#FFF0B3; color:#FF8B00; padding:2px 8px; border-radius:10px; font-weight:600;">' + u.inReview + '</span>' : '<span style="color:#c1c7d0;">0</span>'}
+                                </td>
+                                <td style="padding:7px 6px; text-align:center;">
+                                    ${u.completed > 0 ? '<span style="background:#E3FCEF; color:#006644; padding:2px 8px; border-radius:10px; font-weight:600;">' + u.completed + '</span>' : '<span style="color:#c1c7d0;">0</span>'}
+                                </td>
+                                <td style="padding:7px 6px; text-align:center; font-weight:700; color:#172b4d;">${total}</td>
+                            </tr>`;
+                    });
+                    tableHtml += `</tbody></table>`;
+                    tableContainer.innerHTML = tableHtml;
+                } else {
+                    tableContainer.innerHTML = '<div style="color:#97a0af; text-align:center; padding:40px 0; font-size:13px;">Henüz atanmış görev bulunmuyor</div>';
+                }
+
+                // Render Project Status Chart (Doughnut)
+                const tsCtx = document.getElementById('tasksChart').getContext('2d');
+                new Chart(tsCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Planlama', 'Devam Eden', 'Beklemede', 'Tamamlandı'],
+                        datasets: [{
+                            data: [stats.planningProjects, stats.inProgressProjects, stats.onHoldProjects, stats.completedProjects],
+                            backgroundColor: ['#6554C0', '#0052CC', '#FF991F', '#00875A'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false, cutout: '70%',
+                        plugins: {
+                            datalabels: {
+                                color: '#fff', font: { weight: 'bold', size: 12 },
+                                formatter: (value, ctx) => {
+                                    const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                                    if (total === 0 || value === 0) return '';
+                                    return Math.round((value / total) * 100) + '%';
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Render Project Priority Chart (Bar - horizontal)
+                const prioData = stats.projectPriorities;
+                const prioCtx = document.getElementById('priorityChart').getContext('2d');
+                new Chart(prioCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(prioData),
+                        datasets: [{
+                            label: 'Proje Sayısı',
+                            data: Object.values(prioData),
+                            backgroundColor: ['#00875A', '#FF991F', '#FF7452', '#DE350B'],
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } },
+                        plugins: {
+                            legend: { display: false },
+                            datalabels: {
+                                anchor: 'center', align: 'center',
+                                color: '#fff', font: { weight: 'bold', size: 12 },
+                                display: (ctx) => ctx.dataset.data[ctx.dataIndex] > 0
+                            }
+                        }
+                    }
+                });
+
+                // Render Project Owner Chart (Horizontal Stacked Bar)
+                const owData = stats.projectOwners || [];
+                const owCtx = document.getElementById('ownerChart').getContext('2d');
+                const owChartHeight = Math.max(280, owData.length * 40);
+                document.getElementById('ownerChartContainer').style.height = owChartHeight + 'px';
+                new Chart(owCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: owData.map(o => o.ownerName),
+                        datasets: [
+                            {
+                                label: 'Planlama',
+                                data: owData.map(o => o.planning),
+                                backgroundColor: '#6554C0',
+                                borderRadius: 2
+                            },
+                            {
+                                label: 'Devam Eden',
+                                data: owData.map(o => o.inProgress),
+                                backgroundColor: '#0052CC',
+                                borderRadius: 2
+                            },
+                            {
+                                label: 'Beklemede',
+                                data: owData.map(o => o.onHold),
+                                backgroundColor: '#FF991F',
+                                borderRadius: 2
+                            },
+                            {
+                                label: 'Tamamlandı',
+                                data: owData.map(o => o.completed),
+                                backgroundColor: '#00875A',
+                                borderRadius: 2
+                            }
+                        ]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: { stacked: true, beginAtZero: true, ticks: { stepSize: 1 } },
+                            y: { stacked: true }
+                        },
+                        plugins: {
+                            legend: { display: true, position: 'top', labels: { boxWidth: 12, font: { size: 10 }, padding: 10 } },
+                            datalabels: {
+                                anchor: 'center', align: 'center',
+                                color: '#fff', font: { weight: 'bold', size: 11 },
+                                display: (ctx) => ctx.dataset.data[ctx.dataIndex] > 0
+                            }
+                        }
+                    }
+                });
+
+                // Render Project Owner Table
+                const owTableContainer = document.getElementById('ownerTableContainer');
+                if (owData.length > 0) {
+                    let owTableHtml = `
+                    <table style="width:100%; border-collapse:collapse; font-size:12px;">
+                        <thead>
+                            <tr style="border-bottom:2px solid #dfe1e6; text-align:left;">
+                                <th style="padding:8px 6px; font-weight:600; color:#5e6c84;">Sorumlu</th>
+                                <th style="padding:8px 6px; text-align:center; font-weight:600; color:#6554C0;">Planlama</th>
+                                <th style="padding:8px 6px; text-align:center; font-weight:600; color:#0052CC;">Devam Eden</th>
+                                <th style="padding:8px 6px; text-align:center; font-weight:600; color:#FF991F;">Beklemede</th>
+                                <th style="padding:8px 6px; text-align:center; font-weight:600; color:#00875A;">Tamamlandı</th>
+                                <th style="padding:8px 6px; text-align:center; font-weight:600; color:#172b4d;">Toplam</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+                    owData.forEach(o => {
+                        owTableHtml += `
+                            <tr style="border-bottom:1px solid #ebecf0;">
+                                <td style="padding:7px 6px; font-weight:500;">${o.ownerName}</td>
+                                <td style="padding:7px 6px; text-align:center;">
+                                    ${o.planning > 0 ? '<span style="background:#EAE6FF; color:#6554C0; padding:2px 8px; border-radius:10px; font-weight:600;">' + o.planning + '</span>' : '<span style="color:#c1c7d0;">0</span>'}
+                                </td>
+                                <td style="padding:7px 6px; text-align:center;">
+                                    ${o.inProgress > 0 ? '<span style="background:#DEEBFF; color:#0052CC; padding:2px 8px; border-radius:10px; font-weight:600;">' + o.inProgress + '</span>' : '<span style="color:#c1c7d0;">0</span>'}
+                                </td>
+                                <td style="padding:7px 6px; text-align:center;">
+                                    ${o.onHold > 0 ? '<span style="background:#FFF0B3; color:#FF8B00; padding:2px 8px; border-radius:10px; font-weight:600;">' + o.onHold + '</span>' : '<span style="color:#c1c7d0;">0</span>'}
+                                </td>
+                                <td style="padding:7px 6px; text-align:center;">
+                                    ${o.completed > 0 ? '<span style="background:#E3FCEF; color:#006644; padding:2px 8px; border-radius:10px; font-weight:600;">' + o.completed + '</span>' : '<span style="color:#c1c7d0;">0</span>'}
+                                </td>
+                                <td style="padding:7px 6px; text-align:center; font-weight:700; color:#172b4d;">${o.totalProjects}</td>
+                            </tr>`;
+                    });
+                    owTableHtml += `</tbody></table>`;
+                    owTableContainer.innerHTML = owTableHtml;
+                } else {
+                    owTableContainer.innerHTML = '<div style="color:#97a0af; text-align:center; padding:40px 0; font-size:13px;">Proje sorumlusu bilgisi bulunamadı</div>';
+                }
+
+            } catch (error) {
+                console.error("Dashboard yüklenemedi:", error);
+                document.getElementById('dashboardContent').innerHTML =
+                    `<div class="error-message" style="display:block">Veriler yüklenirken bir hata oluştu: ${escapeHtml(error.message)}</div>`;
+            }
+        });
+    </script>
+</body>
+
+</html>
