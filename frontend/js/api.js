@@ -1,5 +1,53 @@
 // Configuration
-const API_BASE_URL = 'http://localhost:8080/api';
+const API_DEFAULT_PORT = '8080';
+const API_PATH = '/api';
+const FRONTEND_DEV_PORTS = new Set(['3000', '4173', '5173', '5500', '8081']);
+const LOCAL_API_FALLBACKS = [
+    `http://localhost:${API_DEFAULT_PORT}${API_PATH}`,
+    `http://127.0.0.1:${API_DEFAULT_PORT}${API_PATH}`
+];
+
+function normalizeApiBaseUrl(url) {
+    return String(url || '').trim().replace(/\/+$/, '');
+}
+
+function uniqueApiBaseUrls(urls) {
+    return [...new Set(urls.filter(Boolean).map(normalizeApiBaseUrl))];
+}
+
+function resolveConfiguredApiBaseUrl() {
+    const configuredBaseUrl = window.__API_BASE_URL__ || localStorage.getItem('apiBaseUrl');
+    return configuredBaseUrl ? normalizeApiBaseUrl(configuredBaseUrl) : null;
+}
+
+function resolveApiBaseUrlCandidates() {
+    const configuredBaseUrl = resolveConfiguredApiBaseUrl();
+    if (configuredBaseUrl) {
+        return [configuredBaseUrl];
+    }
+
+    const { protocol, hostname, port, origin } = window.location;
+
+    if (protocol === 'file:' || !hostname) {
+        return LOCAL_API_FALLBACKS;
+    }
+
+    const sameOriginApi = `${origin}${API_PATH}`;
+    const hostApi = `${protocol}//${hostname}:${API_DEFAULT_PORT}${API_PATH}`;
+
+    if (port === API_DEFAULT_PORT) {
+        return [sameOriginApi];
+    }
+
+    if (FRONTEND_DEV_PORTS.has(port)) {
+        return uniqueApiBaseUrls([hostApi, sameOriginApi, ...LOCAL_API_FALLBACKS]);
+    }
+
+    return uniqueApiBaseUrls([sameOriginApi, hostApi, ...LOCAL_API_FALLBACKS]);
+}
+
+let API_BASE_URL_CANDIDATES = resolveApiBaseUrlCandidates();
+let API_BASE_URL = API_BASE_URL_CANDIDATES[0];
 
 // Authentication Management
 function getToken() {
@@ -39,7 +87,7 @@ async function apiCall(endpoint, options = {}) {
     };
 
     if (token) {
-        defaultHeaders['Authorization'] = `Bearer ${token}`;
+        defaultHeaders.Authorization = `Bearer ${token}`;
     }
 
     const config = {
@@ -51,25 +99,120 @@ async function apiCall(endpoint, options = {}) {
     };
 
     try {
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+        const response = await fetchWithResolvedApi(endpoint, config);
+        const payload = await readApiPayload(response);
 
-        // Handle unauthorized
         if (response.status === 401 || response.status === 403) {
             handleAuthError();
-            throw new Error('Oturum süresi doldu veya yetkiniz yok.');
+            throw createApiError(
+                getApiErrorMessageFromPayload(response, payload, 'Oturum suresi doldu veya yetkiniz yok.'),
+                { status: response.status, isAuthError: true }
+            );
         }
-
-        const data = await response.json();
 
         if (!response.ok) {
-            throw new Error(data.message || 'API request failed');
+            throw createApiError(
+                getApiErrorMessageFromPayload(response, payload, 'API istegi basarisiz oldu.'),
+                { status: response.status }
+            );
         }
 
-        return data;
+        if (!payload.body) {
+            throw createApiError('Sunucudan gecersiz bir yanit alindi.', {
+                status: response.status
+            });
+        }
+
+        return payload.body;
     } catch (error) {
+        if (error instanceof TypeError) {
+            const networkError = createApiError(
+                'Sunucuya baglanilamadi. API adresini ve sunucunun calistigini kontrol edin.',
+                { isNetworkError: true, cause: error }
+            );
+            console.error('API Error:', networkError);
+            throw networkError;
+        }
+
         console.error('API Error:', error);
         throw error;
     }
+}
+
+async function fetchWithResolvedApi(endpoint, config) {
+    let lastError = null;
+
+    for (const baseUrl of API_BASE_URL_CANDIDATES) {
+        try {
+            const response = await fetch(`${baseUrl}${endpoint}`, config);
+            API_BASE_URL = baseUrl;
+            return response;
+        } catch (error) {
+            lastError = error;
+        }
+    }
+
+    throw lastError || new TypeError('API request failed');
+}
+
+async function readApiPayload(response) {
+    const rawText = await response.text();
+
+    if (!rawText) {
+        return { body: null, rawText: '' };
+    }
+
+    try {
+        return {
+            body: JSON.parse(rawText),
+            rawText
+        };
+    } catch (error) {
+        return {
+            body: null,
+            rawText
+        };
+    }
+}
+
+function getApiErrorMessageFromPayload(response, payload, fallbackMessage) {
+    if (payload.body && payload.body.message) {
+        return payload.body.message;
+    }
+
+    const rawMessage = extractResponseText(payload.rawText);
+    if (rawMessage) {
+        return rawMessage;
+    }
+
+    if (response.status >= 500) {
+        return 'Sunucuda bir hata olustu. Lutfen tekrar deneyin.';
+    }
+
+    return fallbackMessage;
+}
+
+function extractResponseText(rawText) {
+    const trimmedText = String(rawText || '').trim();
+    if (!trimmedText) {
+        return null;
+    }
+
+    if (trimmedText.startsWith('<!DOCTYPE') || trimmedText.startsWith('<html')) {
+        return null;
+    }
+
+    return trimmedText;
+}
+
+function createApiError(message, properties = {}) {
+    const error = new Error(message);
+    Object.assign(error, properties);
+    return error;
+}
+
+function getApiErrorMessage(error, fallbackMessage = 'Bir hata olustu.') {
+    return error && error.message ? error.message : fallbackMessage;
 }
 
 // Generic Modal Management
@@ -100,22 +243,19 @@ class ModalManager {
 
 // Close modals when clicking outside or on close buttons
 document.addEventListener('DOMContentLoaded', () => {
-    // Populate user info in sidebar if exists
     const user = getUser();
     if (user && document.getElementById('sidebarUserName')) {
         document.getElementById('sidebarUserName').textContent = user.fullName;
         document.getElementById('sidebarUserRole').textContent =
-            user.role === 'ADMIN' ? 'Sistem Yöneticisi' :
-                user.role === 'MANAGER' ? 'Proje Müdürü' : 'Kullanıcı';
+            user.role === 'ADMIN' ? 'Sistem Yoneticisi' :
+                user.role === 'MANAGER' ? 'Proje Muduru' : 'Kullanici';
         document.getElementById('userAvatarText').textContent = user.fullName.charAt(0).toUpperCase();
 
-        // Hide admin links for non-admins
         if (user.role !== 'ADMIN') {
             document.querySelectorAll('.admin-only').forEach(el => el.classList.add('d-none'));
         }
     }
 
-    // Logout handling
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
@@ -125,17 +265,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Modal close events
     document.querySelectorAll('.modal-close, [data-dismiss="modal"]').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const modal = e.target.closest('.modal-overlay');
-            if (modal) ModalManager.close(modal.id);
+        btn.addEventListener('click', event => {
+            const modal = event.target.closest('.modal-overlay');
+            if (modal) {
+                ModalManager.close(modal.id);
+            }
         });
     });
 
     document.querySelectorAll('.modal-overlay').forEach(overlay => {
-        overlay.addEventListener('click', (e) => {
-            if (e.target === overlay) {
+        overlay.addEventListener('click', event => {
+            if (event.target === overlay) {
                 ModalManager.close(overlay.id);
             }
         });
@@ -165,34 +306,39 @@ function getStatusBadgeClass(status) {
     switch (status) {
         case 'TODO':
         case 'PLANNING':
-        case 'ON_HOLD': return 'status-todo';
+        case 'ON_HOLD':
+            return 'status-todo';
         case 'IN_PROGRESS':
-        case 'IN_REVIEW': return 'status-progress';
-        case 'COMPLETED': return 'status-done';
-        case 'CANCELLED': return 'status-cancelled';
-        default: return 'status-todo';
+        case 'IN_REVIEW':
+            return 'status-progress';
+        case 'COMPLETED':
+            return 'status-done';
+        case 'CANCELLED':
+            return 'status-cancelled';
+        default:
+            return 'status-todo';
     }
 }
 
 function getStatusLabel(status) {
     const labels = {
-        'PLANNING': 'Planlama',
-        'IN_PROGRESS': 'Devam Ediyor',
-        'ON_HOLD': 'Beklemede',
-        'COMPLETED': 'Tamamlandı',
-        'CANCELLED': 'İptal',
-        'TODO': 'Yapılacak',
-        'IN_REVIEW': 'Planlandı'
+        PLANNING: 'Planlama',
+        IN_PROGRESS: 'Devam Ediyor',
+        ON_HOLD: 'Beklemede',
+        COMPLETED: 'Tamamlandi',
+        CANCELLED: 'Iptal',
+        TODO: 'Yapilacak',
+        IN_REVIEW: 'Planlandi'
     };
     return labels[status] || status;
 }
 
 function getPriorityLabel(priority) {
     const labels = {
-        'LOW': 'Düşük',
-        'MEDIUM': 'Orta',
-        'HIGH': 'Yüksek',
-        'CRITICAL': 'Kritik'
+        LOW: 'Dusuk',
+        MEDIUM: 'Orta',
+        HIGH: 'Yuksek',
+        CRITICAL: 'Kritik'
     };
     const text = labels[priority] || priority;
     if (priority === 'CRITICAL') {

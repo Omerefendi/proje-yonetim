@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giriş Yap | Proje Yönetim Sistemi</title>
+    <title>Giris Yap | Proje Yonetim Sistemi</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <style>
@@ -117,12 +117,12 @@
             color: var(--color-text-subtlest);
             text-align: left;
         }
-        
+
         .demo-credentials h4 {
             margin: 0 0 8px 0;
             color: var(--color-text-subtle);
         }
-        
+
         .demo-credentials ul {
             margin: 0;
             padding-left: 16px;
@@ -138,38 +138,37 @@
                 <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
             </svg>
         </div>
-        <h1 class="login-title">Proje Yönetim Sistemi</h1>
-        <p class="login-subtitle">Devam etmek için giriş yapın</p>
+        <h1 class="login-title">Proje Yonetim Sistemi</h1>
+        <p class="login-subtitle">Devam etmek icin giris yapin</p>
 
         <form id="loginForm">
             <div class="form-group">
-                <label for="username" class="form-label">Kullanıcı Adı</label>
-                <input type="text" id="username" class="form-input" required placeholder="Kullanıcı adınızı girin">
+                <label for="username" class="form-label">Kullanici Adi</label>
+                <input type="text" id="username" class="form-input" required placeholder="Kullanici adinizi girin">
             </div>
-            
+
             <div class="form-group">
-                <label for="password" class="form-label">Şifre</label>
-                <input type="password" id="password" class="form-input" required placeholder="Şifrenizi girin">
+                <label for="password" class="form-label">Sifre</label>
+                <input type="password" id="password" class="form-input" required placeholder="Sifrenizi girin">
             </div>
 
             <div id="errorMessage" class="error-message"></div>
 
-            <button type="submit" class="btn-login" id="loginBtn">Giriş Yap</button>
+            <button type="submit" class="btn-login" id="loginBtn">Giris Yap</button>
         </form>
 
         <div class="demo-credentials">
-            <h4>Sistem Kullanıcıları:</h4>
+            <h4>Sistem Kullanicilari:</h4>
             <ul>
                 <li><strong>Admin:</strong> admin / admin123</li>
-                <li><strong>Yönetici:</strong> manager / manager123</li>
-                <li><strong>Kullanıcı:</strong> ahmet / ahmet123</li>
+                <li><strong>Yonetici:</strong> manager / manager123</li>
+                <li><strong>Kullanici:</strong> ahmet / ahmet123</li>
             </ul>
         </div>
     </div>
 
     <script src="js/api.js"></script>
     <script>
-        // Check if already logged in with a valid token
         const existingToken = localStorage.getItem('token');
         if (existingToken && existingToken.split('.').length === 3) {
             try {
@@ -180,61 +179,50 @@
                     localStorage.removeItem('token');
                     localStorage.removeItem('user');
                 }
-            } catch (e) {
+            } catch (error) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
             }
         }
 
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
+        document.getElementById('loginForm').addEventListener('submit', async event => {
+            event.preventDefault();
+
             const usernameInput = document.getElementById('username');
             const passwordInput = document.getElementById('password');
             const errorMsg = document.getElementById('errorMessage');
             const loginBtn = document.getElementById('loginBtn');
             const originalBtnText = loginBtn.textContent;
-            
+
             if (!usernameInput.value || !passwordInput.value) {
-                errorMsg.textContent = 'Lütfen kullanıcı adı ve şifre girin.';
+                errorMsg.textContent = 'Lutfen kullanici adi ve sifre girin.';
                 errorMsg.style.display = 'block';
                 return;
             }
 
             try {
-                loginBtn.textContent = 'Giriş Yapılıyor...';
+                loginBtn.textContent = 'Giris Yapiliyor...';
                 loginBtn.disabled = true;
                 errorMsg.style.display = 'none';
 
-                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                const response = await apiCall('/auth/login', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
                     body: JSON.stringify({
-                        username: usernameInput.value,
+                        username: usernameInput.value.trim(),
                         password: passwordInput.value
                     })
                 });
 
-                const data = await response.json();
-
-                if (response.ok && data.success) {
-                    // Save token and user info
-                    localStorage.setItem('token', data.data.token);
-                    localStorage.setItem('user', JSON.stringify(data.data));
-                    
-                    // Redirect to dashboard
-                    window.location.href = 'index.html';
-                } else {
-                    errorMsg.textContent = data.message || 'Giriş başarısız. Lütfen bilgilerinizi kontrol edin.';
-                    errorMsg.style.display = 'block';
-                    loginBtn.textContent = originalBtnText;
-                    loginBtn.disabled = false;
+                if (!response.success || !response.data || !response.data.token) {
+                    throw new Error(response.message || 'Giris basarisiz. Lutfen bilgilerinizi kontrol edin.');
                 }
+
+                localStorage.setItem('token', response.data.token);
+                localStorage.setItem('user', JSON.stringify(response.data));
+                window.location.href = 'index.html';
             } catch (error) {
                 console.error('Login error:', error);
-                errorMsg.textContent = 'Sunucuya bağlanılamadı. Lütfen API\'nin çalıştığından emin olun.';
+                errorMsg.textContent = getApiErrorMessage(error, 'Giris basarisiz. Lutfen tekrar deneyin.');
                 errorMsg.style.display = 'block';
                 loginBtn.textContent = originalBtnText;
                 loginBtn.disabled = false;
