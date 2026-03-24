@@ -109,6 +109,77 @@
             border-left: 4px solid var(--color-danger);
         }
 
+        .api-config {
+            margin-top: 16px;
+            text-align: left;
+        }
+
+        .api-config-toggle {
+            background: none;
+            border: none;
+            color: var(--color-primary);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 0;
+        }
+
+        .api-config-panel {
+            display: none;
+            margin-top: 12px;
+            padding: 14px;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-medium);
+            background-color: var(--color-background-subtle);
+        }
+
+        .api-config-panel.active {
+            display: block;
+        }
+
+        .api-config-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .btn-secondary,
+        .btn-ghost {
+            border-radius: var(--radius-medium);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 10px 12px;
+        }
+
+        .btn-secondary {
+            background-color: var(--color-primary);
+            border: none;
+            color: var(--color-text-inverse);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--color-primary-hover);
+        }
+
+        .btn-ghost {
+            background-color: transparent;
+            border: 1px solid var(--color-border);
+            color: var(--color-text-subtle);
+        }
+
+        .btn-ghost:hover {
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+        }
+
+        .api-config-help {
+            color: var(--color-text-subtle);
+            font-size: 12px;
+            line-height: 1.5;
+            margin: 10px 0 0 0;
+        }
+
         .demo-credentials {
             margin-top: 24px;
             padding-top: 24px;
@@ -154,6 +225,24 @@
 
             <div id="errorMessage" class="error-message"></div>
 
+            <div class="api-config">
+                <button type="button" class="api-config-toggle" id="apiConfigToggle">API Ayarlari</button>
+                <div id="apiConfigPanel" class="api-config-panel">
+                    <label for="apiBaseUrlInput" class="form-label">API Adresi</label>
+                    <input
+                        type="text"
+                        id="apiBaseUrlInput"
+                        class="form-input"
+                        placeholder="http://localhost:8080/api"
+                    >
+                    <div class="api-config-actions">
+                        <button type="button" class="btn-secondary" id="saveApiConfigBtn">Kaydet</button>
+                        <button type="button" class="btn-ghost" id="resetApiConfigBtn">Varsayilana Don</button>
+                    </div>
+                    <p id="apiConfigHelp" class="api-config-help"></p>
+                </div>
+            </div>
+
             <button type="submit" class="btn-login" id="loginBtn">Giris Yap</button>
         </form>
 
@@ -185,18 +274,62 @@
             }
         }
 
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const errorMsg = document.getElementById('errorMessage');
+        const loginBtn = document.getElementById('loginBtn');
+        const apiConfigToggle = document.getElementById('apiConfigToggle');
+        const apiConfigPanel = document.getElementById('apiConfigPanel');
+        const apiBaseUrlInput = document.getElementById('apiBaseUrlInput');
+        const apiConfigHelp = document.getElementById('apiConfigHelp');
+        const saveApiConfigBtn = document.getElementById('saveApiConfigBtn');
+        const resetApiConfigBtn = document.getElementById('resetApiConfigBtn');
+
+        function showMessage(message) {
+            errorMsg.textContent = message;
+            errorMsg.style.display = 'block';
+        }
+
+        function renderApiConfigState(openPanel = false) {
+            const storedBaseUrl = window.apiConfig?.getStoredBaseUrl?.() || '';
+            const currentBaseUrl = window.apiConfig?.getCurrentBaseUrl?.() || 'http://localhost:8080/api';
+
+            apiBaseUrlInput.value = storedBaseUrl;
+            apiConfigHelp.innerHTML = storedBaseUrl
+                ? `Kayitli API adresi: <strong>${escapeHtml(storedBaseUrl)}</strong>`
+                : `Backend varsayilan olarak <strong>${escapeHtml(currentBaseUrl)}</strong> adresinde aranir.`;
+
+            if (openPanel) {
+                apiConfigPanel.classList.add('active');
+            }
+        }
+
+        apiConfigToggle.addEventListener('click', () => {
+            apiConfigPanel.classList.toggle('active');
+        });
+
+        saveApiConfigBtn.addEventListener('click', () => {
+            const value = apiBaseUrlInput.value.trim();
+            const resolvedBaseUrl = window.apiConfig?.setBaseUrl?.(value);
+            renderApiConfigState(true);
+            showMessage(`API adresi kaydedildi: ${resolvedBaseUrl || 'varsayilan ayarlar'}`);
+        });
+
+        resetApiConfigBtn.addEventListener('click', () => {
+            window.apiConfig?.clearBaseUrl?.();
+            renderApiConfigState(true);
+            showMessage('API adresi varsayilan ayarlara donduruldu.');
+        });
+
+        renderApiConfigState();
+
         document.getElementById('loginForm').addEventListener('submit', async event => {
             event.preventDefault();
 
-            const usernameInput = document.getElementById('username');
-            const passwordInput = document.getElementById('password');
-            const errorMsg = document.getElementById('errorMessage');
-            const loginBtn = document.getElementById('loginBtn');
             const originalBtnText = loginBtn.textContent;
 
             if (!usernameInput.value || !passwordInput.value) {
-                errorMsg.textContent = 'Lutfen kullanici adi ve sifre girin.';
-                errorMsg.style.display = 'block';
+                showMessage('Lutfen kullanici adi ve sifre girin.');
                 return;
             }
 
@@ -222,8 +355,10 @@
                 window.location.href = 'index.html';
             } catch (error) {
                 console.error('Login error:', error);
-                errorMsg.textContent = getApiErrorMessage(error, 'Giris basarisiz. Lutfen tekrar deneyin.');
-                errorMsg.style.display = 'block';
+                if (error.isNetworkError) {
+                    renderApiConfigState(true);
+                }
+                showMessage(getApiErrorMessage(error, 'Giris basarisiz. Lutfen tekrar deneyin.'));
                 loginBtn.textContent = originalBtnText;
                 loginBtn.disabled = false;
             }

@@ -1,6 +1,8 @@
 // Configuration
 const API_DEFAULT_PORT = '8080';
 const API_PATH = '/api';
+const API_BASE_URL_STORAGE_KEY = 'apiBaseUrl';
+const LAST_WORKING_API_BASE_URL_STORAGE_KEY = 'lastWorkingApiBaseUrl';
 const FRONTEND_DEV_PORTS = new Set(['3000', '4173', '5173', '5500', '8081']);
 const LOCAL_API_FALLBACKS = [
     `http://localhost:${API_DEFAULT_PORT}${API_PATH}`,
@@ -15,17 +17,51 @@ function uniqueApiBaseUrls(urls) {
     return [...new Set(urls.filter(Boolean).map(normalizeApiBaseUrl))];
 }
 
-function resolveConfiguredApiBaseUrl() {
-    const configuredBaseUrl = window.__API_BASE_URL__ || localStorage.getItem('apiBaseUrl');
-    return configuredBaseUrl ? normalizeApiBaseUrl(configuredBaseUrl) : null;
+function hasExplicitProtocol(url) {
+    return /^[a-z][a-z0-9+.-]*:\/\//i.test(String(url || ''));
 }
 
-function resolveApiBaseUrlCandidates() {
-    const configuredBaseUrl = resolveConfiguredApiBaseUrl();
-    if (configuredBaseUrl) {
-        return [configuredBaseUrl];
+function ensureApiPath(url) {
+    const normalizedUrl = normalizeApiBaseUrl(url);
+    if (!normalizedUrl) {
+        return null;
     }
 
+    if (/\/api(?:$|[/?#])/i.test(normalizedUrl)) {
+        return normalizedUrl;
+    }
+
+    return `${normalizedUrl}${API_PATH}`;
+}
+
+function expandApiBaseUrlCandidates(url) {
+    const normalizedUrl = normalizeApiBaseUrl(url);
+    if (!normalizedUrl) {
+        return [];
+    }
+
+    const urlWithProtocol =
+        !hasExplicitProtocol(normalizedUrl) && !normalizedUrl.startsWith('/')
+            ? `http://${normalizedUrl}`
+            : normalizedUrl;
+
+    return uniqueApiBaseUrls([
+        ensureApiPath(urlWithProtocol),
+        urlWithProtocol
+    ]);
+}
+
+function resolveStoredApiBaseUrls() {
+    const configuredBaseUrl = window.__API_BASE_URL__ || localStorage.getItem(API_BASE_URL_STORAGE_KEY);
+    const lastWorkingBaseUrl = localStorage.getItem(LAST_WORKING_API_BASE_URL_STORAGE_KEY);
+
+    return uniqueApiBaseUrls([
+        ...expandApiBaseUrlCandidates(configuredBaseUrl),
+        ...expandApiBaseUrlCandidates(lastWorkingBaseUrl)
+    ]);
+}
+
+function resolveDynamicApiBaseUrls() {
     const { protocol, hostname, port, origin } = window.location;
 
     if (protocol === 'file:' || !hostname) {
@@ -46,8 +82,78 @@ function resolveApiBaseUrlCandidates() {
     return uniqueApiBaseUrls([sameOriginApi, hostApi, ...LOCAL_API_FALLBACKS]);
 }
 
+function resolveApiBaseUrlCandidates() {
+    return uniqueApiBaseUrls([
+        ...resolveStoredApiBaseUrls(),
+        ...resolveDynamicApiBaseUrls()
+    ]);
+}
+
 let API_BASE_URL_CANDIDATES = resolveApiBaseUrlCandidates();
 let API_BASE_URL = API_BASE_URL_CANDIDATES[0];
+
+function refreshApiBaseUrlCandidates(preferredBaseUrl = null) {
+    API_BASE_URL_CANDIDATES = uniqueApiBaseUrls([
+        preferredBaseUrl,
+        ...resolveApiBaseUrlCandidates()
+    ]);
+    API_BASE_URL = API_BASE_URL_CANDIDATES[0];
+}
+
+function rememberWorkingApiBaseUrl(baseUrl) {
+    const normalizedBaseUrl = normalizeApiBaseUrl(baseUrl);
+    if (!normalizedBaseUrl) {
+        return;
+    }
+
+    try {
+        localStorage.setItem(LAST_WORKING_API_BASE_URL_STORAGE_KEY, normalizedBaseUrl);
+    } catch (error) {
+        // Ignore storage write failures and continue with in-memory state.
+    }
+
+    refreshApiBaseUrlCandidates(normalizedBaseUrl);
+}
+
+function getStoredApiBaseUrl() {
+    return normalizeApiBaseUrl(localStorage.getItem(API_BASE_URL_STORAGE_KEY));
+}
+
+function setConfiguredApiBaseUrl(url) {
+    const candidates = expandApiBaseUrlCandidates(url);
+    const storedValue = normalizeApiBaseUrl(url);
+
+    if (storedValue) {
+        localStorage.setItem(API_BASE_URL_STORAGE_KEY, storedValue);
+        refreshApiBaseUrlCandidates(candidates[0] || storedValue);
+        return API_BASE_URL;
+    }
+
+    localStorage.removeItem(API_BASE_URL_STORAGE_KEY);
+    refreshApiBaseUrlCandidates();
+    return API_BASE_URL;
+}
+
+function isLikelyApiResponse(response, payload) {
+    const contentType = response.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+        return true;
+    }
+
+    if (payload.body && typeof payload.body === 'object') {
+        return true;
+    }
+
+    return Boolean(extractResponseText(payload.rawText));
+}
+
+window.apiConfig = {
+    clearBaseUrl: () => setConfiguredApiBaseUrl(''),
+    getCandidates: () => [...API_BASE_URL_CANDIDATES],
+    getCurrentBaseUrl: () => API_BASE_URL,
+    getStoredBaseUrl: getStoredApiBaseUrl,
+    setBaseUrl: setConfiguredApiBaseUrl
+};
 
 // Authentication Management
 function getToken() {
@@ -99,8 +205,12 @@ async function apiCall(endpoint, options = {}) {
     };
 
     try {
-        const response = await fetchWithResolvedApi(endpoint, config);
+        const { response, baseUrl } = await fetchWithResolvedApi(endpoint, config);
         const payload = await readApiPayload(response);
+
+        if (isLikelyApiResponse(response, payload)) {
+            rememberWorkingApiBaseUrl(baseUrl);
+        }
 
         if (response.status === 401 || response.status === 403) {
             handleAuthError();
@@ -145,8 +255,7 @@ async function fetchWithResolvedApi(endpoint, config) {
     for (const baseUrl of API_BASE_URL_CANDIDATES) {
         try {
             const response = await fetch(`${baseUrl}${endpoint}`, config);
-            API_BASE_URL = baseUrl;
-            return response;
+            return { response, baseUrl };
         } catch (error) {
             lastError = error;
         }
