@@ -20,6 +20,9 @@ public class ProjectService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ProjectDocumentService projectDocumentService;
+
     public List<Project> getAllProjects() {
         return projectRepository.findAllByOrderByStartDateAsc();
     }
@@ -62,6 +65,7 @@ public class ProjectService {
     public void deleteProject(Long id) {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Proje bulunamadı: " + id));
+        projectDocumentService.deleteAllForProject(id);
         projectRepository.delete(project);
     }
 

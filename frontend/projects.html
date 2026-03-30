@@ -7,6 +7,282 @@
     <title>Projeler | Proje Yönetim Sistemi</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        .projects-stack {
+            display: grid;
+            gap: 20px;
+        }
+
+        .card-header-block {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px 20px 0;
+        }
+
+        .card-header-text h2 {
+            margin: 0 0 6px;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--color-text);
+        }
+
+        .card-header-text p {
+            margin: 0;
+            color: var(--color-text-subtle);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .workload-card-body {
+            padding: 20px;
+            display: grid;
+            gap: 16px;
+        }
+
+        .workload-filter-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .workload-filter-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .workload-filter-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .workload-query-state {
+            color: var(--color-text-subtle);
+            font-size: 12px;
+        }
+
+        .workload-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .workload-stat-card {
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-medium);
+            padding: 14px 16px;
+            background: var(--color-surface);
+            min-height: 96px;
+        }
+
+        .workload-stat-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            color: var(--color-text-subtle);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .workload-stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--color-text);
+            line-height: 1.1;
+            margin-bottom: 6px;
+        }
+
+        .workload-stat-note {
+            font-size: 12px;
+            color: var(--color-text-subtle);
+            line-height: 1.4;
+        }
+
+        .workload-table .data-table td {
+            vertical-align: top;
+        }
+
+        .workload-person-block,
+        .workload-project-block {
+            display: grid;
+            gap: 4px;
+        }
+
+        .workload-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--color-text);
+        }
+
+        .workload-subtext {
+            font-size: 12px;
+            color: var(--color-text-subtle);
+        }
+
+        .workload-project-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        .workload-color-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+            box-shadow: inset 0 0 0 1px rgba(9, 30, 66, 0.08);
+            flex: 0 0 12px;
+        }
+
+        .workload-count {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--color-text);
+        }
+
+        .workload-count-note {
+            display: block;
+            margin-top: 4px;
+            font-size: 11px;
+            color: var(--color-text-subtle);
+        }
+
+        .workload-status-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .workload-mini-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            background: var(--color-background-neutral);
+            color: var(--color-text-subtle);
+        }
+
+        .workload-detail-row {
+            display: none;
+            background: #f7f9fc;
+        }
+
+        .workload-detail-row.active {
+            display: table-row;
+        }
+
+        .workload-detail-cell {
+            padding: 16px 20px !important;
+        }
+
+        .workload-detail-content {
+            display: grid;
+            gap: 14px;
+        }
+
+        .workload-detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .workload-detail-panel {
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-medium);
+            background: #fff;
+            overflow: hidden;
+        }
+
+        .workload-detail-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            background: #f1f5f9;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .workload-detail-panel-title {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--color-text);
+        }
+
+        .workload-item-list {
+            padding: 14px;
+            display: grid;
+            gap: 10px;
+        }
+
+        .workload-item-card {
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-small);
+            padding: 12px;
+            display: grid;
+            gap: 8px;
+            background: #fff;
+        }
+
+        .workload-item-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--color-text);
+            line-height: 1.4;
+        }
+
+        .workload-item-subtitle,
+        .workload-item-meta {
+            font-size: 12px;
+            color: var(--color-text-subtle);
+            line-height: 1.5;
+        }
+
+        .workload-item-badges {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .workload-empty-state {
+            text-align: center;
+            color: var(--color-text-subtle);
+            font-size: 13px;
+            padding: 20px 16px;
+        }
+
+        @media (max-width: 1200px) {
+            .workload-filter-grid,
+            .workload-summary-grid,
+            .workload-detail-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 720px) {
+            .card-header-block,
+            .workload-filter-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .workload-filter-grid,
+            .workload-summary-grid,
+            .workload-detail-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -116,8 +392,9 @@
             </header>
 
             <div class="content-body">
-                <div class="card">
-                    <div class="table-container">
+                <div class="projects-stack">
+                    <div class="card">
+                        <div class="table-container">
                         <table class="data-table">
                             <thead>
                                 <tr>
@@ -136,6 +413,7 @@
                                 </tr>
                             </tbody>
                         </table>
+                        </div>
                     </div>
                 </div>
             </div>

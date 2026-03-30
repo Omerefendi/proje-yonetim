@@ -1,0 +1,487 @@
+.card-header-block {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px 20px 0;
+}
+
+.card-header-text h2 {
+    margin: 0 0 6px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--color-text);
+}
+
+.card-header-text p {
+    margin: 0;
+    color: var(--color-text-subtle);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.workload-card-body {
+    padding: 20px;
+    display: grid;
+    gap: 16px;
+}
+
+.workload-filter-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.workload-filter-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.workload-filter-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.workload-query-state {
+    color: var(--color-text-subtle);
+    font-size: 12px;
+}
+
+.workload-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.workload-stat-card {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-medium);
+    padding: 14px 16px;
+    background: var(--color-surface);
+    min-height: 96px;
+}
+
+.workload-stat-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--color-text-subtle);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.workload-stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--color-text);
+    line-height: 1.1;
+    margin-bottom: 6px;
+}
+
+.workload-stat-note {
+    font-size: 12px;
+    color: var(--color-text-subtle);
+    line-height: 1.4;
+}
+
+.workload-table .data-table td {
+    vertical-align: top;
+}
+
+.workload-person-block,
+.workload-project-block {
+    display: grid;
+    gap: 4px;
+}
+
+.workload-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.workload-subtext {
+    font-size: 12px;
+    color: var(--color-text-subtle);
+}
+
+.workload-project-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+}
+
+.workload-color-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    box-shadow: inset 0 0 0 1px rgba(9, 30, 66, 0.08);
+    flex: 0 0 12px;
+}
+
+.workload-count {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-text);
+}
+
+.workload-count-note {
+    display: block;
+    margin-top: 4px;
+    font-size: 11px;
+    color: var(--color-text-subtle);
+}
+
+.workload-status-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.workload-mini-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    background: var(--color-background-neutral);
+    color: var(--color-text-subtle);
+}
+
+.workload-detail-row {
+    display: none;
+    background: #f7f9fc;
+}
+
+.workload-detail-row.active {
+    display: table-row;
+}
+
+.workload-detail-cell {
+    padding: 16px 20px !important;
+}
+
+.workload-detail-content {
+    display: grid;
+    gap: 14px;
+}
+
+.workload-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.workload-detail-panel {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-medium);
+    background: #fff;
+    overflow: hidden;
+}
+
+.workload-detail-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: #f1f5f9;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.workload-detail-panel-title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-text);
+}
+
+.workload-item-list {
+    padding: 14px;
+    display: grid;
+    gap: 10px;
+}
+
+.workload-item-card {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-small);
+    padding: 12px;
+    display: grid;
+    gap: 8px;
+    background: #fff;
+}
+
+.workload-item-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text);
+    line-height: 1.4;
+}
+
+.workload-item-subtitle,
+.workload-item-meta {
+    font-size: 12px;
+    color: var(--color-text-subtle);
+    line-height: 1.5;
+}
+
+.workload-item-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.workload-empty-state {
+    text-align: center;
+    color: var(--color-text-subtle);
+    font-size: 13px;
+    padding: 20px 16px;
+}
+
+.workload-panel-compact {
+    padding: 8px;
+}
+
+.workload-panel-compact .card-header-block {
+    gap: 10px;
+    padding: 10px 10px 0;
+}
+
+.workload-panel-compact .card-header-text h2 {
+    margin-bottom: 3px;
+    font-size: 14px;
+}
+
+.workload-panel-compact .card-header-text p {
+    font-size: 11px;
+    line-height: 1.3;
+}
+
+.workload-panel-compact .workload-card-body {
+    padding: 10px;
+    gap: 10px;
+}
+
+.workload-panel-compact .workload-filter-grid,
+.workload-panel-compact .workload-summary-grid {
+    gap: 8px;
+}
+
+.workload-panel-compact .workload-filter-actions,
+.workload-panel-compact .workload-detail-grid,
+.workload-panel-compact .workload-detail-content {
+    gap: 8px;
+}
+
+.workload-panel-compact .workload-filter-buttons,
+.workload-panel-compact .workload-item-badges {
+    gap: 6px;
+}
+
+.workload-panel-compact .workload-query-state,
+.workload-panel-compact .workload-subtext,
+.workload-panel-compact .workload-stat-note,
+.workload-panel-compact .workload-item-subtitle,
+.workload-panel-compact .workload-item-meta {
+    font-size: 11px;
+}
+
+.workload-panel-compact .form-label {
+    margin-bottom: 3px;
+    font-size: 12px;
+}
+
+.workload-panel-compact .form-control {
+    padding: 4px 8px;
+    font-size: 13px;
+    min-height: 32px;
+}
+
+.workload-panel-compact .btn {
+    padding: 4px 8px;
+    font-size: 13px;
+}
+
+.workload-panel-compact .workload-stat-card {
+    padding: 6px 7px;
+    min-height: 56px;
+    position: relative;
+    overflow: hidden;
+    border-width: 1px;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+}
+
+.workload-panel-compact .workload-stat-label {
+    font-size: 10px;
+    margin-bottom: 4px;
+}
+
+.workload-panel-compact .workload-stat-value {
+    font-size: 17px;
+    margin-bottom: 2px;
+}
+
+.workload-panel-compact .data-table th {
+    padding: 5px 6px;
+    font-size: 11px;
+}
+
+.workload-panel-compact .data-table td {
+    padding: 5px 6px;
+    font-size: 13px;
+}
+
+.workload-panel-compact .workload-name,
+.workload-panel-compact .workload-count,
+.workload-panel-compact .workload-detail-panel-title,
+.workload-panel-compact .workload-item-title {
+    font-size: 13px;
+}
+
+.workload-panel-compact .workload-project-chip {
+    gap: 4px;
+}
+
+.workload-panel-compact .workload-color-dot {
+    width: 8px;
+    height: 8px;
+    flex-basis: 8px;
+}
+
+.workload-panel-compact .workload-count-note {
+    margin-top: 2px;
+    font-size: 10px;
+}
+
+.workload-panel-compact .workload-status-group {
+    gap: 4px;
+}
+
+.workload-panel-compact .workload-mini-badge {
+    gap: 2px;
+    padding: 2px 5px;
+    font-size: 10px;
+}
+
+.workload-panel-compact .badge {
+    font-size: 10px;
+}
+
+.workload-panel-compact .workload-detail-cell {
+    padding: 6px 8px !important;
+}
+
+.workload-panel-compact .workload-detail-panel-header {
+    gap: 8px;
+    padding: 5px 6px;
+}
+
+.workload-panel-compact .workload-item-list {
+    padding: 6px;
+    gap: 6px;
+}
+
+.workload-panel-compact .workload-item-card {
+    padding: 5px 6px;
+    gap: 4px;
+}
+
+.workload-panel-compact .workload-empty-state {
+    font-size: 11px;
+    padding: 10px 8px;
+}
+
+.workload-panel-compact .workload-summary-grid .workload-stat-card::before {
+    content: '';
+    position: absolute;
+    inset: auto -16px -20px auto;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    opacity: 0.28;
+    pointer-events: none;
+}
+
+.workload-panel-compact .workload-summary-grid .workload-stat-card:nth-child(1) {
+    background: linear-gradient(135deg, #eef4ff 0%, #dbeafe 100%);
+    border-color: #9ec5fe;
+}
+
+.workload-panel-compact .workload-summary-grid .workload-stat-card:nth-child(1)::before {
+    background: #3b82f6;
+}
+
+.workload-panel-compact .workload-summary-grid .workload-stat-card:nth-child(2) {
+    background: linear-gradient(135deg, #fff4e5 0%, #ffe0b2 100%);
+    border-color: #f7b267;
+}
+
+.workload-panel-compact .workload-summary-grid .workload-stat-card:nth-child(2)::before {
+    background: #f59e0b;
+}
+
+.workload-panel-compact .workload-summary-grid .workload-stat-card:nth-child(3) {
+    background: linear-gradient(135deg, #eafbf3 0%, #d1fae5 100%);
+    border-color: #7dd3a4;
+}
+
+.workload-panel-compact .workload-summary-grid .workload-stat-card:nth-child(3)::before {
+    background: #10b981;
+}
+
+.workload-panel-compact .workload-summary-grid .workload-stat-card:nth-child(4) {
+    background: linear-gradient(135deg, #f4f1ff 0%, #e9d5ff 100%);
+    border-color: #c4b5fd;
+}
+
+.workload-panel-compact .workload-summary-grid .workload-stat-card:nth-child(4)::before {
+    background: #8b5cf6;
+}
+
+.workload-panel-compact .workload-summary-grid .workload-stat-card:nth-child(5) {
+    background: linear-gradient(135deg, #fff1f2 0%, #fecdd3 100%);
+    border-color: #fda4af;
+}
+
+.workload-panel-compact .workload-summary-grid .workload-stat-card:nth-child(5)::before {
+    background: #f43f5e;
+}
+
+.workload-panel-compact .workload-summary-grid .workload-stat-card .workload-stat-label,
+.workload-panel-compact .workload-summary-grid .workload-stat-card .workload-stat-note {
+    color: #334155;
+}
+
+.workload-panel-compact .workload-summary-grid .workload-stat-card .workload-stat-value {
+    color: #0f172a;
+}
+
+@media (max-width: 1200px) {
+    .workload-filter-grid,
+    .workload-summary-grid,
+    .workload-detail-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 720px) {
+    .card-header-block,
+    .workload-filter-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .workload-filter-grid,
+    .workload-summary-grid,
+    .workload-detail-grid {
+        grid-template-columns: 1fr;
+    }
+}

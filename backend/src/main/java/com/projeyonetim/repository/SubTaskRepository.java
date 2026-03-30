@@ -25,4 +25,7 @@ public interface SubTaskRepository extends JpaRepository<SubTask, Long> {
 
     @Query("SELECT COUNT(st) FROM SubTask st WHERE st.task.project.id = :projectId AND st.status = :status")
     long countByProjectIdAndStatus(Long projectId, Task.Status status);
+
+    @Query("SELECT DISTINCT st FROM SubTask st LEFT JOIN FETCH st.task t LEFT JOIN FETCH t.project LEFT JOIN FETCH st.assignee")
+    List<SubTask> findAllWithTaskProjectAndAssignee();
 }

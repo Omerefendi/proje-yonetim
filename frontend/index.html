@@ -7,6 +7,7 @@
     <title>Dashboard | Proje Yönetim Sistemi</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/workload-panel.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 </head>
@@ -118,6 +119,87 @@
             </header>
 
             <div class="content-body" id="dashboardContent">
+                <div class="card workload-panel-compact" style="margin-bottom: 14px;">
+                    <div class="card-header-block">
+                        <div class="card-header-text">
+                            <h2>Personel ve Proje Is Yuku Sorgusu</h2>
+                            <p>Personel, proje ve durum bazinda gorev ile alt gorev yuk dagilimini detayli olarak inceleyin.</p>
+                        </div>
+                        <div class="workload-query-state" id="workloadQueryState">Filtreler hazirlaniyor...</div>
+                    </div>
+                    <div class="workload-card-body">
+                        <div class="workload-filter-grid">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="form-label" for="workloadPersonFilter">Personel</label>
+                                <select id="workloadPersonFilter" class="form-control">
+                                    <option value="">Tum personeller</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="form-label" for="workloadProjectFilter">Proje</label>
+                                <select id="workloadProjectFilter" class="form-control">
+                                    <option value="">Tum projeler</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="form-label" for="workloadStatusFilter">Durum kapsami</label>
+                                <select id="workloadStatusFilter" class="form-control">
+                                    <option value="ALL">Tum durumlar</option>
+                                    <option value="OPEN">Sadece acik isler</option>
+                                    <option value="TODO">Yapilacak</option>
+                                    <option value="IN_PROGRESS">Devam eden</option>
+                                    <option value="IN_REVIEW">Incelemede</option>
+                                    <option value="COMPLETED">Tamamlanan</option>
+                                    <option value="CANCELLED">Iptal edilen</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="form-label" for="workloadSearchInput">Metin arama</label>
+                                <input id="workloadSearchInput" class="form-control" type="search" placeholder="Personel, proje ya da gorev ara">
+                            </div>
+                        </div>
+
+                        <div class="workload-filter-actions">
+                            <div class="workload-filter-buttons">
+                                <button class="btn btn-primary" id="workloadQueryBtn" type="button">Sorgula</button>
+                                <button class="btn btn-secondary" id="workloadResetBtn" type="button">Filtreyi Temizle</button>
+                            </div>
+                            <div class="workload-query-state" id="workloadVisibleState">Tum kayitlar gosteriliyor.</div>
+                        </div>
+
+                        <div class="workload-summary-grid" id="workloadSummaryGrid">
+                            <div class="workload-stat-card">
+                                <div class="workload-stat-label">Toplam Yuk</div>
+                                <div class="workload-stat-value">-</div>
+                                <div class="workload-stat-note">Veri bekleniyor</div>
+                            </div>
+                        </div>
+
+                        <div class="table-container workload-table">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>PERSONEL</th>
+                                        <th>PROJE</th>
+                                        <th>GOREV</th>
+                                        <th>ALT GOREV</th>
+                                        <th>ACIK IS</th>
+                                        <th>TAHMINI SAAT</th>
+                                        <th>ORT. ILERLEME</th>
+                                        <th>DURUM DAGILIMI</th>
+                                        <th>DETAY</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="workloadTableBody">
+                                    <tr>
+                                        <td colspan="9" style="text-align: center; color: var(--color-text-subtle);">Yukleniyor...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Stats Grid -->
                 <div class="dashboard-grid">
                     <div class="stat-card">
@@ -625,6 +707,7 @@
             }
         });
     </script>
+    <script src="js/projects-page.js"></script>
 </body>
 
 </html>

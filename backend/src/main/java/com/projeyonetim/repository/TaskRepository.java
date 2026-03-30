@@ -33,4 +33,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     @Query("SELECT t FROM Task t WHERE t.project.id = :projectId ORDER BY t.orderIndex ASC")
     List<Task> findByProjectIdOrdered(Long projectId);
+
+    @Query("SELECT DISTINCT t FROM Task t LEFT JOIN FETCH t.project LEFT JOIN FETCH t.assignee")
+    List<Task> findAllWithProjectAndAssignee();
 }

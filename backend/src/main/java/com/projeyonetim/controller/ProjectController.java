@@ -2,17 +2,29 @@ package com.projeyonetim.controller;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.projeyonetim.dto.ApiResponse;
+import com.projeyonetim.dto.ProjectDocumentResponse;
+import com.projeyonetim.dto.ProjectWorkloadReportDto;
 import com.projeyonetim.model.Project;
+import com.projeyonetim.model.ProjectDocument;
 import com.projeyonetim.model.User;
 import com.projeyonetim.model.Task;
 import com.projeyonetim.model.SubTask;
+import com.projeyonetim.service.ProjectDocumentService;
 import com.projeyonetim.service.ProjectService;
+import com.projeyonetim.service.ProjectWorkloadReportService;
 import com.projeyonetim.service.TaskService;
 import com.projeyonetim.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -30,10 +42,29 @@ public class ProjectController {
     @Autowired
     private TaskService taskService;
 
+    @Autowired
+    private ProjectDocumentService projectDocumentService;
+
+    @Autowired
+    private ProjectWorkloadReportService projectWorkloadReportService;
+
     @GetMapping
     public ResponseEntity<ApiResponse<List<Project>>> getAllProjects() {
         List<Project> projects = projectService.getAllProjects();
         return ResponseEntity.ok(ApiResponse.success(projects));
+    }
+
+    @GetMapping("/workload-report")
+    public ResponseEntity<ApiResponse<ProjectWorkloadReportDto>> getWorkloadReport(
+            @RequestParam(required = false) Long personId,
+            @RequestParam(required = false) Long projectId,
+            @RequestParam(defaultValue = "ALL") String status) {
+        try {
+            ProjectWorkloadReportDto report = projectWorkloadReportService.generateReport(personId, projectId, status);
+            return ResponseEntity.ok(ApiResponse.success(report));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(ApiResponse.error(e.getMessage()));
+        }
     }
 
     @GetMapping("/{id}")
@@ -213,6 +244,71 @@ public class ProjectController {
         try {
             projectService.deleteProject(id);
             return ResponseEntity.ok(ApiResponse.success("Proje silindi", null));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(ApiResponse.error(e.getMessage()));
+        }
+    }
+
+    @GetMapping("/{id}/documents")
+    public ResponseEntity<ApiResponse<List<ProjectDocumentResponse>>> getProjectDocuments(@PathVariable Long id) {
+        try {
+            List<ProjectDocumentResponse> documents = projectDocumentService.getDocumentsByProject(id);
+            return ResponseEntity.ok(ApiResponse.success(documents));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(ApiResponse.error(e.getMessage()));
+        }
+    }
+
+    @PostMapping(value = "/{id}/documents", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<List<ProjectDocumentResponse>>> uploadProjectDocuments(
+            @PathVariable Long id,
+            @RequestParam("files") MultipartFile[] files,
+            Authentication authentication) {
+        try {
+            String username = authentication != null ? authentication.getName() : null;
+            List<ProjectDocumentResponse> uploadedDocuments =
+                    projectDocumentService.storeDocuments(id, files, username);
+            return ResponseEntity.ok(ApiResponse.success("Dokumanlar yuklendi", uploadedDocuments));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(ApiResponse.error(e.getMessage()));
+        }
+    }
+
+    @GetMapping("/{id}/documents/{documentId}/download")
+    public ResponseEntity<Resource> downloadProjectDocument(
+            @PathVariable Long id,
+            @PathVariable Long documentId) {
+        try {
+            ProjectDocument document = projectDocumentService.getDocument(id, documentId);
+            Resource resource = projectDocumentService.loadDocumentAsResource(document);
+
+            MediaType mediaType;
+            try {
+                mediaType = MediaType.parseMediaType(document.getContentType());
+            } catch (Exception e) {
+                mediaType = MediaType.APPLICATION_OCTET_STREAM;
+            }
+
+            return ResponseEntity.ok()
+                    .contentType(mediaType)
+                    .contentLength(document.getSizeBytes())
+                    .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment()
+                            .filename(document.getOriginalFileName(), StandardCharsets.UTF_8)
+                            .build()
+                            .toString())
+                    .body(resource);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/{id}/documents/{documentId}")
+    public ResponseEntity<ApiResponse<Void>> deleteProjectDocument(
+            @PathVariable Long id,
+            @PathVariable Long documentId) {
+        try {
+            projectDocumentService.deleteDocument(id, documentId);
+            return ResponseEntity.ok(ApiResponse.success("Dokuman silindi", null));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(ApiResponse.error(e.getMessage()));
         }

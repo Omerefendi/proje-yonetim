@@ -8,6 +8,61 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <style>
+        body.project-detail-compact {
+            --project-compact-scale: 0.8;
+        }
+
+        body.project-detail-compact .main-header {
+            height: calc(var(--header-height) * var(--project-compact-scale));
+            padding: 0 calc(var(--spacing-xl) * var(--project-compact-scale));
+        }
+
+        body.project-detail-compact .header-title {
+            font-size: 18px;
+        }
+
+        body.project-detail-compact .content-body {
+            padding: calc(var(--spacing-xl) * var(--project-compact-scale));
+        }
+
+        body.project-detail-compact .card {
+            padding: calc(var(--spacing-lg) * var(--project-compact-scale));
+            margin-bottom: calc(var(--spacing-lg) * var(--project-compact-scale));
+        }
+
+        body.project-detail-compact .btn {
+            gap: calc(var(--spacing-sm) * var(--project-compact-scale));
+            padding: 5px 10px;
+            font-size: 13px;
+        }
+
+        body.project-detail-compact .form-group {
+            margin-bottom: calc(var(--spacing-md) * var(--project-compact-scale));
+        }
+
+        body.project-detail-compact .form-label {
+            margin-bottom: calc(var(--spacing-xs) * var(--project-compact-scale));
+        }
+
+        body.project-detail-compact .form-control {
+            padding: 6px 10px;
+            font-size: 13px;
+        }
+
+        body.project-detail-compact .modal {
+            max-width: 560px;
+        }
+
+        body.project-detail-compact .modal-header,
+        body.project-detail-compact .modal-body,
+        body.project-detail-compact .modal-footer {
+            padding: calc(var(--spacing-lg) * var(--project-compact-scale));
+        }
+
+        body.project-detail-compact .modal-title {
+            font-size: 18px;
+        }
+
         .task-list {
             margin-top: var(--spacing-md);
         }
@@ -117,10 +172,265 @@
             font-weight: 500;
             color: var(--color-text);
         }
+
+        .documents-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .document-upload-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            flex-wrap: wrap;
+        }
+
+        .document-selection-info {
+            margin-bottom: var(--spacing-sm);
+            font-size: 13px;
+            color: var(--color-text-subtle);
+        }
+
+        .document-upload-help {
+            margin-bottom: var(--spacing-md);
+            font-size: 12px;
+            color: var(--color-text-subtle);
+        }
+
+        .project-documents-list {
+            display: grid;
+            gap: var(--spacing-sm);
+        }
+
+        .project-document-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--spacing-md);
+            padding: 14px 16px;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-medium);
+            background-color: var(--color-surface);
+        }
+
+        .project-document-main {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .document-type-badge {
+            min-width: 54px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 0.04em;
+        }
+
+        .document-type-pdf {
+            background: #ffebe6;
+            color: #de350b;
+        }
+
+        .document-type-doc {
+            background: #deebff;
+            color: #0747a6;
+        }
+
+        .document-type-sheet {
+            background: #e3fcef;
+            color: #006644;
+        }
+
+        .document-type-image {
+            background: #eae6ff;
+            color: #403294;
+        }
+
+        .document-type-file {
+            background: #f4f5f7;
+            color: #42526e;
+        }
+
+        .document-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--color-text);
+            word-break: break-word;
+        }
+
+        .document-meta {
+            margin-top: 4px;
+            font-size: 12px;
+            color: var(--color-text-subtle);
+        }
+
+        .document-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .document-empty-state {
+            padding: 20px;
+            text-align: center;
+            color: var(--color-text-subtle);
+            border: 1px dashed var(--color-border);
+            border-radius: var(--radius-medium);
+            background-color: var(--color-background-subtle);
+        }
+
+        body.project-detail-compact .task-list {
+            margin-top: calc(var(--spacing-md) * var(--project-compact-scale));
+        }
+
+        body.project-detail-compact .task-item {
+            margin-bottom: calc(var(--spacing-sm) * var(--project-compact-scale));
+        }
+
+        body.project-detail-compact .task-header {
+            padding: calc(var(--spacing-md) * var(--project-compact-scale));
+        }
+
+        body.project-detail-compact .task-title-area {
+            gap: calc(var(--spacing-md) * var(--project-compact-scale));
+        }
+
+        body.project-detail-compact .task-meta {
+            gap: calc(var(--spacing-xl) * var(--project-compact-scale));
+            font-size: 11px;
+        }
+
+        body.project-detail-compact .subtask-list {
+            padding: 0 calc(var(--spacing-md) * var(--project-compact-scale))
+                calc(var(--spacing-md) * var(--project-compact-scale))
+                calc(calc(var(--spacing-md) * var(--project-compact-scale)) + 26px);
+        }
+
+        body.project-detail-compact .subtask-item {
+            padding: calc(var(--spacing-sm) * var(--project-compact-scale)) 0;
+        }
+
+        body.project-detail-compact .project-header-card {
+            margin-bottom: calc(var(--spacing-lg) * var(--project-compact-scale));
+        }
+
+        body.project-detail-compact .project-meta-grid {
+            gap: calc(var(--spacing-md) * var(--project-compact-scale));
+            margin-top: calc(var(--spacing-lg) * var(--project-compact-scale));
+            padding-top: calc(var(--spacing-lg) * var(--project-compact-scale));
+        }
+
+        body.project-detail-compact .documents-card-header {
+            gap: calc(var(--spacing-md) * var(--project-compact-scale));
+            margin-bottom: calc(var(--spacing-md) * var(--project-compact-scale));
+        }
+
+        body.project-detail-compact .document-selection-info {
+            margin-bottom: calc(var(--spacing-sm) * var(--project-compact-scale));
+        }
+
+        body.project-detail-compact .project-document-item {
+            gap: calc(var(--spacing-md) * var(--project-compact-scale));
+            padding: 11px 13px;
+        }
+
+        body.project-detail-compact .document-type-badge {
+            padding: 5px 8px;
+        }
+
+        body.project-detail-compact .document-empty-state {
+            padding: 16px;
+        }
+
+        body.project-detail-compact #projectName {
+            font-size: 20px !important;
+        }
+
+        body.project-detail-compact #projectNameInput {
+            font-size: 20px !important;
+            padding: 2px 6px !important;
+        }
+
+        body.project-detail-compact #projectStatusSelect,
+        body.project-detail-compact #projectOwnerSelect,
+        body.project-detail-compact #projectPrioritySelect {
+            padding: 2px 6px !important;
+        }
+
+        body.project-detail-compact #projectDesc {
+            margin-bottom: 13px !important;
+            padding: 3px 6px !important;
+            min-height: 16px !important;
+        }
+
+        body.project-detail-compact #projectDescInput {
+            margin-bottom: 13px !important;
+            font-size: 13px !important;
+        }
+
+        body.project-detail-compact #projectOwner,
+        body.project-detail-compact #projectDates,
+        body.project-detail-compact #projectPriority {
+            padding: 2px 3px !important;
+        }
+
+        body.project-detail-compact #projectStartDateInput,
+        body.project-detail-compact #projectEndDateInput,
+        body.project-detail-compact #taskSearchInput,
+        body.project-detail-compact #taskFilterSelect {
+            padding: 3px 6px !important;
+        }
+
+        body.project-detail-compact .task-status-select,
+        body.project-detail-compact .subtask-status-select {
+            padding: 0 5px !important;
+            font-size: 10px !important;
+        }
+
+        body.project-detail-compact #tasksContainer .btn {
+            padding: 2px 6px !important;
+            font-size: 10px !important;
+        }
+
+        body.project-detail-compact #tasksContainer .subtask-list > div {
+            padding-top: 10px !important;
+            padding-bottom: 10px !important;
+        }
+
+        body.project-detail-compact #tasksContainer .task-edit-field,
+        body.project-detail-compact #tasksContainer .st-assignee-select,
+        body.project-detail-compact #tasksContainer [id^="st-edit-"] .form-control {
+            padding: 3px 5px !important;
+            font-size: 11px !important;
+        }
+
+        body.project-detail-compact #tasksContainer strong {
+            font-size: 13px;
+        }
+
+        @media (max-width: 860px) {
+            .documents-card-header,
+            .project-document-item {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .document-actions {
+                justify-content: flex-start;
+            }
+        }
     </style>
 </head>
 
-<body>
+<body class="project-detail-compact">
     <div class="app-container">
         <!-- Sidebar Navigation -->
         <aside class="sidebar">
@@ -238,6 +548,27 @@
                                 <div class="meta-value" id="projectProgress">-</div>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="documents-card-header">
+                        <div>
+                            <h3 style="font-size: 16px; margin-bottom: 6px;">Proje Dokumanlari</h3>
+                            <div style="font-size: 13px; color: var(--color-text-subtle);">
+                                Bu projeye PDF, Word, Excel ve JPG/PNG dosyalari ekleyebilirsin. Her dosya en fazla 25 MB olabilir. Yuklenen dosyalar sadece secili projeye baglanir.
+                            </div>
+                        </div>
+                        <div class="document-upload-actions">
+                            <label for="projectDocumentInput" class="btn btn-secondary">Dosya Sec</label>
+                            <input type="file" id="projectDocumentInput" multiple
+                                accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png" style="display: none;">
+                            <button class="btn btn-primary" id="uploadProjectDocumentsBtn">Dokuman Yukle</button>
+                        </div>
+                    </div>
+                    <div class="document-selection-info" id="documentSelectionInfo"></div>
+                    <div class="project-documents-list" id="projectDocumentsContainer">
+                        <div class="document-empty-state">Dokumanlar yukleniyor...</div>
                     </div>
                 </div>
 
@@ -419,6 +750,8 @@
         const projectId = urlParams.get('id');
         let currentProjectDates = { start: '', end: '' };
         let currentProjectData = null;
+        let currentProjectDocuments = [];
+        const allowedDocumentExtensions = new Set(['pdf', 'doc', 'docx', 'xls', 'xlsx', 'jpg', 'jpeg', 'png']);
 
         if (!projectId) {
             window.location.href = 'projects.html';
@@ -427,6 +760,9 @@
         document.addEventListener('DOMContentLoaded', async () => {
             await loadProjectDetails();
             await populateUsersDropdowns();
+            handleDocumentSelectionChange();
+            document.getElementById('projectDocumentInput').addEventListener('change', handleDocumentSelectionChange);
+            document.getElementById('uploadProjectDocumentsBtn').addEventListener('click', uploadProjectDocuments);
 
             // Save Task Logic
             document.getElementById('saveTaskBtn').addEventListener('click', async () => {
@@ -520,6 +856,7 @@
 
                 // Load Tasks
                 await loadTasks();
+                await loadProjectDocuments();
 
             } catch (error) {
                 console.error("Projeyi yüklerken hata", error);
@@ -529,6 +866,247 @@
         }
 
         // loadTasks is defined below with search/filter support
+
+        async function loadProjectDocuments() {
+            const container = document.getElementById('projectDocumentsContainer');
+
+            try {
+                const res = await apiCall(`/projects/${projectId}/documents`);
+                currentProjectDocuments = res.data || [];
+                renderProjectDocuments();
+            } catch (error) {
+                console.error('Dokumanlar yuklenemedi', error);
+                currentProjectDocuments = [];
+                container.innerHTML = `<div class="document-empty-state">Dokumanlar yuklenemedi: ${escapeHtml(error.message)}</div>`;
+            }
+        }
+
+        function renderProjectDocuments() {
+            const container = document.getElementById('projectDocumentsContainer');
+
+            if (!currentProjectDocuments.length) {
+                container.innerHTML = '<div class="document-empty-state">Bu proje icin henuz dokuman eklenmedi.</div>';
+                return;
+            }
+
+            let html = '';
+            currentProjectDocuments.forEach(document => {
+                const typeInfo = getDocumentTypeInfo(document.fileName, document.contentType);
+                const safeFileName = escapeHtml(document.fileName);
+                const fileNameArg = JSON.stringify(document.fileName);
+                const uploadedBy = document.uploadedByName ? ` | ${escapeHtml(document.uploadedByName)}` : '';
+
+                html += `
+                    <div class="project-document-item">
+                        <div class="project-document-main">
+                            <div class="document-type-badge ${typeInfo.badgeClass}">${typeInfo.label}</div>
+                            <div>
+                                <div class="document-name">${safeFileName}</div>
+                                <div class="document-meta">${formatFileSize(document.sizeBytes)} | ${formatDateTime(document.uploadedAt)}${uploadedBy}</div>
+                            </div>
+                        </div>
+                        <div class="document-actions">
+                            <button class="btn btn-secondary" style="font-size:11px; padding:4px 10px;" onclick='downloadProjectDocument(${document.id}, ${fileNameArg})'>Indir</button>
+                            <button class="btn btn-secondary" style="font-size:11px; padding:4px 10px; color:var(--color-danger); border-color:var(--color-danger);" onclick='deleteProjectDocument(${document.id}, ${fileNameArg})'>Sil</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function handleDocumentSelectionChange() {
+            const input = document.getElementById('projectDocumentInput');
+            const info = document.getElementById('documentSelectionInfo');
+            const files = Array.from(input.files || []);
+
+            if (!files.length) {
+                info.textContent = '';
+                return;
+            }
+
+            const invalidFiles = files.filter(file => !isAllowedDocumentFile(file.name));
+            if (invalidFiles.length) {
+                info.textContent = `Desteklenmeyen dosya secildi: ${invalidFiles.map(file => file.name).join(', ')}`;
+                return;
+            }
+
+            info.textContent = `${files.length} dosya secildi: ${files.map(file => file.name).join(', ')}`;
+        }
+
+        async function uploadProjectDocuments() {
+            const input = document.getElementById('projectDocumentInput');
+            const uploadButton = document.getElementById('uploadProjectDocumentsBtn');
+            const files = Array.from(input.files || []);
+
+            if (!files.length) {
+                alert('Lutfen yuklemek icin en az bir dosya secin.');
+                return;
+            }
+
+            const invalidFiles = files.filter(file => !isAllowedDocumentFile(file.name));
+            if (invalidFiles.length) {
+                alert(`Desteklenmeyen dosya secildi: ${invalidFiles.map(file => file.name).join(', ')}`);
+                return;
+            }
+
+            const formData = new FormData();
+            files.forEach(file => formData.append('files', file));
+
+            uploadButton.disabled = true;
+            uploadButton.textContent = 'Yukleniyor...';
+
+            try {
+                const response = await fetchAuthorizedResponse(`/projects/${projectId}/documents`, {
+                    method: 'POST',
+                    body: formData
+                });
+                await response.json();
+                input.value = '';
+                handleDocumentSelectionChange();
+                await loadProjectDocuments();
+            } catch (error) {
+                alert('Dokuman yuklenirken hata: ' + error.message);
+            } finally {
+                uploadButton.disabled = false;
+                uploadButton.textContent = 'Dokuman Yukle';
+            }
+        }
+
+        async function downloadProjectDocument(documentId, fileName) {
+            try {
+                const response = await fetchAuthorizedResponse(`/projects/${projectId}/documents/${documentId}/download`);
+                const blob = await response.blob();
+                const downloadUrl = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = downloadUrl;
+                link.download = fileName;
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                URL.revokeObjectURL(downloadUrl);
+            } catch (error) {
+                alert('Dokuman indirilirken hata: ' + error.message);
+            }
+        }
+
+        async function deleteProjectDocument(documentId, fileName) {
+            if (!confirm(`"${fileName}" dosyasini silmek istediginizden emin misiniz?`)) {
+                return;
+            }
+
+            try {
+                await apiCall(`/projects/${projectId}/documents/${documentId}`, { method: 'DELETE' });
+                await loadProjectDocuments();
+            } catch (error) {
+                alert('Dokuman silinirken hata: ' + error.message);
+            }
+        }
+
+        function isAllowedDocumentFile(fileName) {
+            const extension = getFileExtension(fileName);
+            return allowedDocumentExtensions.has(extension);
+        }
+
+        function getFileExtension(fileName) {
+            const normalizedName = String(fileName || '').trim().toLowerCase();
+            const lastDot = normalizedName.lastIndexOf('.');
+            if (lastDot < 0) {
+                return '';
+            }
+            return normalizedName.slice(lastDot + 1);
+        }
+
+        function getDocumentTypeInfo(fileName, contentType) {
+            const extension = getFileExtension(fileName);
+
+            if (extension === 'pdf' || String(contentType || '').includes('pdf')) {
+                return { label: 'PDF', badgeClass: 'document-type-pdf' };
+            }
+
+            if (['doc', 'docx'].includes(extension)) {
+                return { label: 'WORD', badgeClass: 'document-type-doc' };
+            }
+
+            if (['xls', 'xlsx'].includes(extension)) {
+                return { label: 'EXCEL', badgeClass: 'document-type-sheet' };
+            }
+
+            if (['jpg', 'jpeg', 'png'].includes(extension) || String(contentType || '').startsWith('image/')) {
+                return { label: 'IMAGE', badgeClass: 'document-type-image' };
+            }
+
+            return { label: 'FILE', badgeClass: 'document-type-file' };
+        }
+
+        function formatFileSize(sizeBytes) {
+            const size = Number(sizeBytes || 0);
+            if (size < 1024) {
+                return `${size} B`;
+            }
+            if (size < 1024 * 1024) {
+                return `${(size / 1024).toFixed(1)} KB`;
+            }
+            return `${(size / (1024 * 1024)).toFixed(1)} MB`;
+        }
+
+        function formatDateTime(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            if (Number.isNaN(date.getTime())) return '-';
+            return date.toLocaleString('tr-TR');
+        }
+
+        async function fetchAuthorizedResponse(endpoint, options = {}) {
+            const token = getToken();
+            const headers = {
+                ...(options.headers || {})
+            };
+
+            if (token) {
+                headers.Authorization = `Bearer ${token}`;
+            }
+
+            const config = {
+                ...options
+            };
+
+            if (Object.keys(headers).length > 0) {
+                config.headers = headers;
+            }
+
+            try {
+                const { response, baseUrl } = await fetchWithResolvedApi(endpoint, config);
+
+                if (response.status === 401 || response.status === 403) {
+                    handleAuthError();
+                    throw createApiError('Oturum suresi doldu veya yetkiniz yok.', {
+                        status: response.status,
+                        isAuthError: true
+                    });
+                }
+
+                if (!response.ok) {
+                    const payload = await readApiPayload(response);
+                    throw createApiError(
+                        getApiErrorMessageFromPayload(response, payload, 'Istek basarisiz oldu.'),
+                        { status: response.status }
+                    );
+                }
+
+                rememberWorkingApiBaseUrl(baseUrl);
+                return response;
+            } catch (error) {
+                if (error instanceof TypeError) {
+                    throw createApiError(
+                        'Sunucuya baglanilamadi. API adresini ve sunucunun calistigini kontrol edin.',
+                        { isNetworkError: true, cause: error }
+                    );
+                }
+                throw error;
+            }
+        }
 
         async function toggleTaskContent(taskId) {
             const el = document.getElementById(`task-${taskId}`);
