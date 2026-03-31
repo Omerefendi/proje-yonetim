@@ -35,6 +35,66 @@
             line-height: 1.5;
         }
 
+        .project-detail-btn {
+            background-color: #15803d;
+            color: #fff !important;
+            border: none;
+        }
+
+        .project-detail-btn:hover {
+            background-color: #166534;
+        }
+
+        .project-progress-track {
+            width: 100%;
+            height: 6px;
+            margin-top: 6px;
+            border-radius: 999px;
+            background: #e5e7eb;
+            overflow: hidden;
+        }
+
+        .project-progress-fill {
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #16a34a, #22c55e);
+        }
+
+        .project-completion-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .project-completion-no_tasks {
+            background: #e5e7eb;
+            color: #475569;
+        }
+
+        .project-completion-not_started {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .project-completion-in_progress {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .project-completion-completed {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .project-completion-note {
+            margin-top: 4px;
+            font-size: 11px;
+            color: var(--color-text-subtle);
+        }
+
         .workload-card-body {
             padding: 20px;
             display: grid;
@@ -403,12 +463,14 @@
                                     <th>ÖNCELİK</th>
                                     <th>SORUMLU</th>
                                     <th>TARİHLER</th>
+                                    <th>İLERLEME %</th>
+                                    <th>TAMAMLANMA</th>
                                     <th>İŞLEMLER</th>
                                 </tr>
                             </thead>
                             <tbody id="projectsTableBody">
                                 <tr>
-                                    <td colspan="6" style="text-align: center; color: var(--color-text-subtle);">
+                                    <td colspan="8" style="text-align: center; color: var(--color-text-subtle);">
                                         Yükleniyor...</td>
                                 </tr>
                             </tbody>
@@ -510,10 +572,16 @@
                             </select>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Proje Rengi</label>
-                        <input type="color" id="p_color" class="form-control" value="#0052CC"
-                            style="height: 40px; padding: 4px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div class="form-group">
+                            <label class="form-label">Proje Sorumlusu</label>
+                            <select id="p_ownerId" class="form-control"></select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Proje Rengi</label>
+                            <input type="color" id="p_color" class="form-control" value="#0052CC"
+                                style="height: 40px; padding: 4px;">
+                        </div>
                     </div>
                 </form>
             </div>
@@ -526,16 +594,104 @@
 
     <script src="js/api.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            await loadProjects();
+        function getProjectCompletionStateLabel(state) {
+            switch (state) {
+                case 'COMPLETED':
+                    return 'Tamamlandi';
+                case 'IN_PROGRESS':
+                    return 'Devam Ediyor';
+                case 'NOT_STARTED':
+                    return 'Baslanmadi';
+                default:
+                    return 'Gorev Yok';
+            }
+        }
 
-            // Setup current date defaults
+        function getProjectCompletionStateClass(state) {
+            switch (state) {
+                case 'COMPLETED':
+                    return 'project-completion-completed';
+                case 'IN_PROGRESS':
+                    return 'project-completion-in_progress';
+                case 'NOT_STARTED':
+                    return 'project-completion-not_started';
+                default:
+                    return 'project-completion-no_tasks';
+            }
+        }
+
+        function getCurrentUserId() {
+            const user = typeof getUser === 'function' ? getUser() : null;
+            return user ? String(user.userId || user.id || '') : '';
+        }
+
+        async function loadProjectOwnerOptions() {
+            const ownerSelect = document.getElementById('p_ownerId');
+            if (!ownerSelect) {
+                return;
+            }
+
+            const currentUser = typeof getUser === 'function' ? getUser() : null;
+            const currentUserId = getCurrentUserId();
+            ownerSelect.innerHTML = '<option value="">Yukleniyor...</option>';
+
+            try {
+                const response = await apiCall('/users');
+                const users = (Array.isArray(response.data) ? response.data : [])
+                    .filter((user) => user && user.active !== false)
+                    .sort((left, right) => String(left.fullName || left.username || '')
+                        .localeCompare(String(right.fullName || right.username || ''), 'tr'));
+
+                if (!users.length) {
+                    ownerSelect.innerHTML = '<option value="">Aktif personel bulunamadi</option>';
+                    return;
+                }
+
+                ownerSelect.innerHTML = users.map((user) => {
+                    const userId = String(user.id);
+                    const userLabel = escapeHtml(user.fullName || user.username || `#${user.id}`);
+                    const isSelected = currentUserId && userId === currentUserId ? ' selected' : '';
+                    return `<option value="${escapeHtml(userId)}"${isSelected}>${userLabel}</option>`;
+                }).join('');
+
+                if (currentUserId) {
+                    ownerSelect.value = currentUserId;
+                }
+            } catch (error) {
+                console.error('Proje sorumlulari yuklenemedi', error);
+
+                if (currentUserId) {
+                    const fallbackLabel = escapeHtml(currentUser?.fullName || currentUser?.username || 'Mevcut Kullanici');
+                    ownerSelect.innerHTML = `<option value="${escapeHtml(currentUserId)}">${fallbackLabel}</option>`;
+                    ownerSelect.value = currentUserId;
+                    return;
+                }
+
+                ownerSelect.innerHTML = '<option value="">Sorumlu listesi yuklenemedi</option>';
+            }
+        }
+
+        function applyProjectFormDefaults() {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('p_startDate').value = today;
 
             const nextMonth = new Date();
             nextMonth.setMonth(nextMonth.getMonth() + 1);
             document.getElementById('p_endDate').value = nextMonth.toISOString().split('T')[0];
+
+            const currentUserId = getCurrentUserId();
+            const ownerSelect = document.getElementById('p_ownerId');
+            if (ownerSelect && currentUserId) {
+                ownerSelect.value = currentUserId;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadProjects();
+            await loadProjectOwnerOptions();
+
+            // Setup current date defaults
+            applyProjectFormDefaults();
 
             // Setup Create Form
             document.getElementById('saveProjectBtn').addEventListener('click', async () => {
@@ -550,13 +706,14 @@
                     status: document.getElementById('p_status').value,
                     priority: document.getElementById('p_priority').value,
                     color: document.getElementById('p_color').value,
-                    ownerId: getUser().userId // The current logged in user
+                    ownerId: document.getElementById('p_ownerId').value || null
                 };
 
                 try {
                     await apiCall('/projects', { method: 'POST', body: JSON.stringify(reqBody) });
                     ModalManager.close('createProjectModal');
                     document.getElementById('projectForm').reset();
+                    applyProjectFormDefaults();
                     await loadProjects();
                 } catch (error) {
                     alert('Hata: ' + error.message);
@@ -571,11 +728,16 @@
                 const tbody = document.getElementById('projectsTableBody');
 
                 if (projects.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--color-text-subtle);">Görüntülenecek proje bulunamadı.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--color-text-subtle);">Görüntülenecek proje bulunamadı.</td></tr>';
                     return;
                 }
 
-                tbody.innerHTML = projects.map(p => `
+                tbody.innerHTML = projects.map(p => {
+                    const progressPercent = Number.isFinite(Number(p.progressPercent)) ? Number(p.progressPercent) : 0;
+                    const completionState = p.completionState || 'NO_TASKS';
+                    const taskCount = Number.isFinite(Number(p.taskCount)) ? Number(p.taskCount) : 0;
+
+                    return `
                     <tr>
                         <td>
                             <div style="display: flex; align-items: center; gap: 8px;">
@@ -593,11 +755,22 @@
                             </div>
                         </td>
                         <td>
-                            <a href="project-detail.html?id=${encodeURIComponent(p.id)}" class="btn btn-secondary" style="font-size: 12px; padding: 4px 8px;">Detay</a>
+                            <div style="font-size: 13px; font-weight: 700; color: var(--color-text);">%${progressPercent}</div>
+                            <div class="project-progress-track">
+                                <div class="project-progress-fill" style="width: ${Math.max(0, Math.min(progressPercent, 100))}%;"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="project-completion-badge ${getProjectCompletionStateClass(completionState)}">${escapeHtml(getProjectCompletionStateLabel(completionState))}</span>
+                            <div class="project-completion-note">${taskCount} gorev</div>
+                        </td>
+                        <td>
+                            <a href="project-detail.html?id=${encodeURIComponent(p.id)}" class="btn project-detail-btn" style="font-size: 12px; padding: 4px 8px;">Detay</a>
                             <button onclick="deleteProject(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}')" class="btn" style="font-size: 12px; padding: 4px 8px; background-color: #de350b; color: #fff; border: none; border-radius: 4px; cursor: pointer; margin-left: 4px;">Sil</button>
                         </td>
                     </tr>
-                `).join('');
+                `;
+                }).join('');
             } catch (error) {
                 console.error("Projeler yüklenemedi", error);
             }

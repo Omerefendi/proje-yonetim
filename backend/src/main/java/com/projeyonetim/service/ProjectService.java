@@ -1,8 +1,10 @@
 package com.projeyonetim.service;
 
 import com.projeyonetim.model.Project;
+import com.projeyonetim.model.Task;
 import com.projeyonetim.model.User;
 import com.projeyonetim.repository.ProjectRepository;
+import com.projeyonetim.repository.TaskRepository;
 import com.projeyonetim.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,14 +23,21 @@ public class ProjectService {
     private UserRepository userRepository;
 
     @Autowired
+    private TaskRepository taskRepository;
+
+    @Autowired
     private ProjectDocumentService projectDocumentService;
 
     public List<Project> getAllProjects() {
-        return projectRepository.findAllByOrderByStartDateAsc();
+        List<Project> projects = projectRepository.findAllByOrderByStartDateAsc();
+        projects.forEach(this::enrichProjectSummary);
+        return projects;
     }
 
     public Optional<Project> getProjectById(Long id) {
-        return projectRepository.findById(id);
+        Optional<Project> project = projectRepository.findById(id);
+        project.ifPresent(this::enrichProjectSummary);
+        return project;
     }
 
     public List<Project> getProjectsByStatus(Project.Status status) {
@@ -91,5 +100,36 @@ public class ProjectService {
 
     public long countByStatus(Project.Status status) {
         return projectRepository.countByStatus(status);
+    }
+
+    public void enrichProjectSummary(Project project) {
+        if (project == null || project.getId() == null) {
+            return;
+        }
+
+        List<Task> tasks = taskRepository.findByProjectIdOrdered(project.getId());
+        int taskCount = tasks.size();
+        project.setTaskCount(taskCount);
+
+        if (taskCount == 0) {
+            project.setProgressPercent(0);
+            project.setCompletionState("NO_TASKS");
+            return;
+        }
+
+        int totalPercent = tasks.stream()
+                .mapToInt(task -> task.getCompletionPercent() != null ? task.getCompletionPercent() : 0)
+                .sum();
+        int averagePercent = Math.round((float) totalPercent / taskCount);
+
+        project.setProgressPercent(averagePercent);
+
+        if (averagePercent >= 100) {
+            project.setCompletionState("COMPLETED");
+        } else if (averagePercent <= 0) {
+            project.setCompletionState("NOT_STARTED");
+        } else {
+            project.setCompletionState("IN_PROGRESS");
+        }
     }
 }

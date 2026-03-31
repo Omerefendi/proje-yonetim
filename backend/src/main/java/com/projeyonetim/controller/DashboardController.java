@@ -8,6 +8,7 @@ import com.projeyonetim.repository.ProjectRepository;
 import com.projeyonetim.repository.TaskRepository;
 import com.projeyonetim.repository.SubTaskRepository;
 import com.projeyonetim.repository.UserRepository;
+import com.projeyonetim.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +31,9 @@ public class DashboardController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ProjectService projectService;
 
     @GetMapping("/stats")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getStats() {
@@ -98,7 +102,7 @@ public class DashboardController {
         stats.put("totalUsers", users.size());
 
         // Project workload (per-project task & subtask counts separately)
-        List<Project> allProjects = projectRepository.findAllByOrderByStartDateAsc();
+        List<Project> allProjects = projectService.getAllProjects();
         List<Map<String, Object>> projectWorkloads = allProjects.stream()
                 .filter(p -> p.getStatus() != Project.Status.CANCELLED)
                 .map(project -> {
@@ -108,21 +112,14 @@ public class DashboardController {
                     pw.put("projectStatus", project.getStatus().name());
                     pw.put("color", project.getColor());
 
-                    long taskTodo = taskRepository.countByProjectIdAndStatus(project.getId(), Task.Status.TODO);
-                    long taskInProgress = taskRepository.countByProjectIdAndStatus(project.getId(), Task.Status.IN_PROGRESS);
-                    long taskInReview = taskRepository.countByProjectIdAndStatus(project.getId(), Task.Status.IN_REVIEW);
-                    long taskCompleted = taskRepository.countByProjectIdAndStatus(project.getId(), Task.Status.COMPLETED);
-                    long totalTaskCount = taskTodo + taskInProgress + taskInReview + taskCompleted;
-
-                    long subTodo = subTaskRepository.countByProjectIdAndStatus(project.getId(), Task.Status.TODO);
-                    long subInProgress = subTaskRepository.countByProjectIdAndStatus(project.getId(), Task.Status.IN_PROGRESS);
-                    long subInReview = subTaskRepository.countByProjectIdAndStatus(project.getId(), Task.Status.IN_REVIEW);
-                    long subCompleted = subTaskRepository.countByProjectIdAndStatus(project.getId(), Task.Status.COMPLETED);
-                    long totalSubTaskCount = subTodo + subInProgress + subInReview + subCompleted;
+                    long totalTaskCount = taskRepository.countByProjectId(project.getId());
+                    long totalSubTaskCount = subTaskRepository.countByProjectId(project.getId());
 
                     pw.put("taskCount", totalTaskCount);
                     pw.put("subTaskCount", totalSubTaskCount);
                     pw.put("totalAll", totalTaskCount + totalSubTaskCount);
+                    pw.put("progressPercent", project.getProgressPercent());
+                    pw.put("completionState", project.getCompletionState());
                     return pw;
                 }).collect(Collectors.toList());
         stats.put("projectWorkloads", projectWorkloads);

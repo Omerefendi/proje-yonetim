@@ -7,7 +7,7 @@
     <title>Dashboard | Proje Yönetim Sistemi</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/workload-panel.css">
+    <link rel="stylesheet" href="css/workload-panel.css?v=20260331-1">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 </head>
@@ -162,7 +162,8 @@
                         <div class="workload-filter-actions">
                             <div class="workload-filter-buttons">
                                 <button class="btn btn-primary" id="workloadQueryBtn" type="button">Sorgula</button>
-                                <button class="btn btn-secondary" id="workloadResetBtn" type="button">Filtreyi Temizle</button>
+                                <button class="btn btn-secondary workload-btn-reset" id="workloadResetBtn" type="button">Filtreyi Temizle</button>
+                                <button class="btn btn-secondary workload-btn-print" id="workloadPrintBtn" type="button">Yazdir / PDF Al</button>
                             </div>
                             <div class="workload-query-state" id="workloadVisibleState">Tum kayitlar gosteriliyor.</div>
                         </div>
@@ -402,6 +403,8 @@
                 if (pwData.length > 0) {
                     const statusLabels = { PLANNING: 'Planlama', IN_PROGRESS: 'Devam Ediyor', ON_HOLD: 'Beklemede', COMPLETED: 'Tamamlandı' };
                     const statusColors = { PLANNING: '#6554C0', IN_PROGRESS: '#0052CC', ON_HOLD: '#FF991F', COMPLETED: '#00875A' };
+                    const completionLabels = { NO_TASKS: 'Gorev Yok', NOT_STARTED: 'Baslamadi', IN_PROGRESS: 'Devam Ediyor', COMPLETED: 'Tamamlandi' };
+                    const completionColors = { NO_TASKS: '#5e6c84', NOT_STARTED: '#7a869a', IN_PROGRESS: '#0052CC', COMPLETED: '#00875A' };
                     let pwTableHtml = `
                     <table style="width:100%; border-collapse:collapse; font-size:12px;">
                         <thead>
@@ -411,13 +414,19 @@
                                 <th style="padding:8px 6px; text-align:center; font-weight:600; color:#0052CC;">Görev</th>
                                 <th style="padding:8px 6px; text-align:center; font-weight:600; color:#FF991F;">Alt Görev</th>
                                 <th style="padding:8px 6px; text-align:center; font-weight:600; color:#172b4d;">Toplam</th>
+                                <th style="padding:8px 6px; text-align:center; font-weight:600; color:#172b4d;">Ilerleme</th>
+                                <th style="padding:8px 6px; text-align:center; font-weight:600; color:#172b4d;">Tamamlanma</th>
                             </tr>
                         </thead>
                         <tbody>`;
                     pwData.forEach(p => {
                         const total = (p.taskCount || 0) + (p.subTaskCount || 0);
+                        const progressPercent = Number.isFinite(Number(p.progressPercent)) ? Number(p.progressPercent) : 0;
+                        const completionState = p.completionState || 'NO_TASKS';
                         const sLabel = statusLabels[p.projectStatus] || p.projectStatus;
                         const sColor = statusColors[p.projectStatus] || '#5e6c84';
+                        const completionLabel = completionLabels[completionState] || completionState;
+                        const completionColor = completionColors[completionState] || '#5e6c84';
                         const dotColor = p.color || sColor;
                         pwTableHtml += `
                             <tr style="border-bottom:1px solid #ebecf0; cursor:pointer;" onclick="window.location.href='project-detail.html?id=${p.projectId}'">
@@ -437,6 +446,10 @@
                                     ${p.subTaskCount > 0 ? '<span style="background:#FFF0B3; color:#FF8B00; padding:2px 8px; border-radius:10px; font-weight:600;">' + p.subTaskCount + '</span>' : '<span style="color:#c1c7d0;">0</span>'}
                                 </td>
                                 <td style="padding:7px 6px; text-align:center; font-weight:700; color:#172b4d;">${total}</td>
+                                <td style="padding:7px 6px; text-align:center; font-weight:700; color:#172b4d;">%${progressPercent}</td>
+                                <td style="padding:7px 6px; text-align:center;">
+                                    <span style="background:${completionColor}15; color:${completionColor}; padding:2px 8px; border-radius:10px; font-weight:600; font-size:11px;">${completionLabel}</span>
+                                </td>
                             </tr>`;
                     });
                     pwTableHtml += `</tbody></table>`;
@@ -707,7 +720,7 @@
             }
         });
     </script>
-    <script src="js/projects-page.js"></script>
+    <script src="js/projects-page.js?v=20260331-2"></script>
 </body>
 
 </html>

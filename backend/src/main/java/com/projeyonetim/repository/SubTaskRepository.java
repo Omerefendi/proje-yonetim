@@ -23,6 +23,9 @@ public interface SubTaskRepository extends JpaRepository<SubTask, Long> {
     @Query("SELECT COUNT(st) FROM SubTask st WHERE st.assignee = :user AND st.status = :status")
     long countByAssigneeAndStatus(User user, Task.Status status);
 
+    @Query("SELECT COUNT(st) FROM SubTask st WHERE st.task.project.id = :projectId")
+    long countByProjectId(Long projectId);
+
     @Query("SELECT COUNT(st) FROM SubTask st WHERE st.task.project.id = :projectId AND st.status = :status")
     long countByProjectIdAndStatus(Long projectId, Task.Status status);
 

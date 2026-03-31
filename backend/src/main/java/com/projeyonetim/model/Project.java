@@ -60,6 +60,15 @@ public class Project {
 
     private String color = "#4f46e5";
 
+    @Transient
+    private Integer progressPercent = 0;
+
+    @Transient
+    private Integer taskCount = 0;
+
+    @Transient
+    private String completionState = "NO_TASKS";
+
     @Column(updatable = false)
     private LocalDateTime createdAt;
 

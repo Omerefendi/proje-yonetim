@@ -53,6 +53,7 @@ public class UserController {
             @RequestBody Map<String, Object> body) {
         try {
             User updateData = new User();
+            updateData.setUsername((String) body.get("username"));
             updateData.setFullName((String) body.get("fullName"));
             updateData.setEmail((String) body.get("email"));
             if (body.get("role") != null)

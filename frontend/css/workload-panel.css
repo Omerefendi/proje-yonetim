@@ -46,6 +46,36 @@
     flex-wrap: wrap;
 }
 
+.workload-btn-reset,
+.workload-btn-print {
+    color: #fff;
+    border: 1px solid transparent;
+    box-shadow: 0 10px 22px rgba(15, 23, 42, 0.14);
+}
+
+.workload-btn-reset {
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+}
+
+.workload-btn-reset:hover {
+    background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+}
+
+.workload-btn-print {
+    background: linear-gradient(135deg, #0f766e 0%, #2563eb 100%);
+}
+
+.workload-btn-print:hover {
+    background: linear-gradient(135deg, #115e59 0%, #1d4ed8 100%);
+}
+
+.workload-btn-reset:disabled,
+.workload-btn-print:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
 .workload-query-state {
     color: var(--color-text-subtle);
     font-size: 12px;

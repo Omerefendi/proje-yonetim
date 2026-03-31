@@ -48,6 +48,13 @@ public class UserService {
     public User updateUser(Long id, User updateData) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı: " + id));
+        if (updateData.getUsername() == null || updateData.getUsername().isBlank()) {
+            throw new RuntimeException("Kullanıcı adı zorunludur.");
+        }
+        if (!updateData.getUsername().equals(user.getUsername()) && userRepository.existsByUsername(updateData.getUsername())) {
+            throw new RuntimeException("Bu kullanıcı adı zaten kullanılıyor: " + updateData.getUsername());
+        }
+        user.setUsername(updateData.getUsername());
         user.setFullName(updateData.getFullName());
         if (updateData.getEmail() != null && !updateData.getEmail().equals(user.getEmail())) {
             if (userRepository.existsByEmail(updateData.getEmail())) {

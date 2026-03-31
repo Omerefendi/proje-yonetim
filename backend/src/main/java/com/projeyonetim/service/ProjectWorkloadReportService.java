@@ -5,8 +5,10 @@ import com.projeyonetim.model.Project;
 import com.projeyonetim.model.SubTask;
 import com.projeyonetim.model.Task;
 import com.projeyonetim.model.User;
+import com.projeyonetim.repository.ProjectRepository;
 import com.projeyonetim.repository.SubTaskRepository;
 import com.projeyonetim.repository.TaskRepository;
+import com.projeyonetim.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 @Service
@@ -31,9 +34,16 @@ public class ProjectWorkloadReportService {
     @Autowired
     private SubTaskRepository subTaskRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private ProjectRepository projectRepository;
+
     @Transactional(readOnly = true)
     public ProjectWorkloadReportDto generateReport(Long personId, Long projectId, String statusFilter) {
         Map<RowKey, MutableRow> rows = new LinkedHashMap<>();
+        Project selectedProject = resolveSelectedProject(projectId);
 
         for (Task task : taskRepository.findAllWithProjectAndAssignee()) {
             if (!matchesTaskFilters(task, personId, projectId, statusFilter)) {
@@ -93,17 +103,58 @@ public class ProjectWorkloadReportService {
             ));
         }
 
+        appendZeroWorkloadRows(rows, resolveUsersForReport(personId), selectedProject, projectId);
+
         List<ProjectWorkloadReportDto.Row> resultRows = rows.values().stream()
                 .map(MutableRow::toDto)
                 .sorted(Comparator
                         .comparingInt(ProjectWorkloadReportDto.Row::getTotalItemCount).reversed()
-                        .thenComparingInt(ProjectWorkloadReportDto.Row::getTotalEstimatedHours).reversed()
+                        .thenComparing(Comparator.comparingInt(ProjectWorkloadReportDto.Row::getTotalEstimatedHours).reversed())
                         .thenComparing(ProjectWorkloadReportDto.Row::getPersonName, String.CASE_INSENSITIVE_ORDER)
                         .thenComparing(ProjectWorkloadReportDto.Row::getProjectName, String.CASE_INSENSITIVE_ORDER))
                 .toList();
 
         ProjectWorkloadReportDto.Summary summary = buildSummary(resultRows);
         return new ProjectWorkloadReportDto(summary, resultRows);
+    }
+
+    private List<User> resolveUsersForReport(Long personId) {
+        if (personId != null) {
+            return userRepository.findById(personId)
+                    .map(List::of)
+                    .orElseGet(List::of);
+        }
+        return userRepository.findByActiveTrue();
+    }
+
+    private Project resolveSelectedProject(Long projectId) {
+        if (projectId == null) {
+            return null;
+        }
+        return projectRepository.findById(projectId).orElse(null);
+    }
+
+    private void appendZeroWorkloadRows(Map<RowKey, MutableRow> rows, List<User> users, Project selectedProject, Long projectId) {
+        if (projectId != null && selectedProject == null) {
+            return;
+        }
+
+        for (User user : users) {
+            if (user == null || user.getId() == null) {
+                continue;
+            }
+
+            boolean rowExistsForUser = projectId != null
+                    ? rows.containsKey(new RowKey(user.getId(), projectId))
+                    : rows.keySet().stream().anyMatch((key) -> user.getId().equals(key.personId()));
+
+            if (rowExistsForUser) {
+                continue;
+            }
+
+            Long rowProjectId = selectedProject != null ? selectedProject.getId() : null;
+            rows.put(new RowKey(user.getId(), rowProjectId), MutableRow.from(user, selectedProject));
+        }
     }
 
     private boolean matchesTaskFilters(Task task, Long personId, Long projectId, String statusFilter) {
@@ -161,8 +212,16 @@ public class ProjectWorkloadReportService {
         int completedItemCount = rows.stream().mapToInt(ProjectWorkloadReportDto.Row::getCompletedItemCount).sum();
         int cancelledItemCount = rows.stream().mapToInt(ProjectWorkloadReportDto.Row::getCancelledItemCount).sum();
         int totalEstimatedHours = rows.stream().mapToInt(ProjectWorkloadReportDto.Row::getTotalEstimatedHours).sum();
-        int uniquePersonnelCount = (int) rows.stream().map(ProjectWorkloadReportDto.Row::getPersonId).distinct().count();
-        int uniqueProjectCount = (int) rows.stream().map(ProjectWorkloadReportDto.Row::getProjectId).distinct().count();
+        int uniquePersonnelCount = (int) rows.stream()
+                .map(ProjectWorkloadReportDto.Row::getPersonId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .count();
+        int uniqueProjectCount = (int) rows.stream()
+                .map(ProjectWorkloadReportDto.Row::getProjectId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .count();
 
         return new ProjectWorkloadReportDto.Summary(
                 rows.size(),
@@ -210,10 +269,10 @@ public class ProjectWorkloadReportService {
             row.personName = assignee.getFullName();
             row.username = assignee.getUsername();
             row.personRole = assignee.getRole() != null ? assignee.getRole().name() : null;
-            row.projectId = project.getId();
-            row.projectName = project.getName();
-            row.projectStatus = project.getStatus() != null ? project.getStatus().name() : null;
-            row.projectColor = project.getColor();
+            row.projectId = project != null ? project.getId() : null;
+            row.projectName = project != null ? project.getName() : "-";
+            row.projectStatus = project != null && project.getStatus() != null ? project.getStatus().name() : null;
+            row.projectColor = project != null ? project.getColor() : "#C1C7D0";
             return row;
         }
 

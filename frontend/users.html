@@ -30,6 +30,26 @@
             background-color: var(--color-success-subtle);
             color: var(--color-success);
         }
+
+        .user-action-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 74px;
+            padding: 4px 8px;
+            font-size: 12px;
+        }
+
+        .user-delete-btn {
+            background-color: #de350b;
+            color: #fff;
+            border: none;
+            margin-left: 16px;
+        }
+
+        .user-delete-btn:hover {
+            background-color: #bf2600;
+        }
     </style>
 </head>
 
@@ -144,7 +164,7 @@
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                         <div class="form-group">
                             <label class="form-label">Kullanıcı Adı <span style="color:var(--color-danger)">*</span>
-                                <small>(Düzenlenemez)</small></label>
+                                <small id="usernameHint">(Düzenlenebilir)</small></label>
                             <input type="text" id="u_username" class="form-control" required>
                         </div>
                         <div class="form-group">
@@ -207,9 +227,11 @@
                 const password = document.getElementById('u_password').value;
 
                 if (!fullName) return alert('Ad Soyad gerekli.');
-                if (!id && (!username || !password)) return alert('Kullanıcı adı ve şifre yeni kayıtlarda zorunludur.');
+                if (!username) return alert('Kullanıcı adı gerekli.');
+                if (!id && !password) return alert('Şifre yeni kayıtlarda zorunludur.');
 
                 const reqBody = {
+                    username,
                     fullName,
                     email: document.getElementById('u_email').value,
                     role: document.getElementById('u_role').value
@@ -219,7 +241,6 @@
                     reqBody.active = document.getElementById('u_active').checked;
                     if (password) reqBody.password = password; // Only send password if changed
                 } else {
-                    reqBody.username = username;
                     reqBody.password = password;
                 }
 
@@ -242,6 +263,8 @@
                 const res = await apiCall('/users');
                 const users = res.data;
                 const tbody = document.getElementById('usersTableBody');
+                const currentUser = getUser();
+                const currentUserId = currentUser ? String(currentUser.userId || currentUser.id || '') : '';
 
                 // Build users cache for safe onclick handling
                 usersCache = {};
@@ -267,7 +290,10 @@
                             '<span class="badge" style="background-color: var(--color-surface-hover);">Pasif</span>'}
                         </td>
                         <td>
-                            <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 12px;" data-user-id="${u.id}" onclick="openUserModal(usersCache[this.dataset.userId])">Düzenle</button>
+                            <button class="btn btn-secondary user-action-btn" data-user-id="${u.id}" onclick="openUserModal(usersCache[this.dataset.userId])">Düzenle</button>
+                            ${u.active && String(u.id) !== currentUserId ?
+                            `<button class="btn user-action-btn user-delete-btn" data-user-id="${u.id}" onclick="deleteUser(usersCache[this.dataset.userId])">Sil</button>` :
+                            ''}
                         </td>
                     </tr>
                     `;
@@ -282,6 +308,7 @@
             document.getElementById('userForm').reset();
             const title = document.getElementById('userModalTitle');
             const usernameInput = document.getElementById('u_username');
+            const usernameHint = document.getElementById('usernameHint');
             const pwReq = document.getElementById('reqPasswordStar');
             const pwHint = document.getElementById('pwHint');
             const activeGroup = document.getElementById('activeStatusGroup');
@@ -291,7 +318,8 @@
                 document.getElementById('u_id').value = user.id;
                 document.getElementById('u_fullName').value = user.fullName;
                 usernameInput.value = user.username;
-                usernameInput.disabled = true;
+                usernameInput.disabled = false;
+                usernameHint.textContent = '(Düzenlenebilir)';
                 document.getElementById('u_email').value = user.email || '';
                 document.getElementById('u_role').value = user.role;
 
@@ -304,6 +332,7 @@
                 title.textContent = 'Yeni Kullanıcı Oluştur';
                 document.getElementById('u_id').value = '';
                 usernameInput.disabled = false;
+                usernameHint.textContent = '(Düzenlenebilir)';
 
                 pwReq.style.display = 'inline';
                 pwHint.style.display = 'none';
@@ -311,6 +340,30 @@
             }
 
             ModalManager.open('userModal');
+        }
+
+        async function deleteUser(user) {
+            if (!user) {
+                return;
+            }
+
+            const currentUser = getUser();
+            const currentUserId = currentUser ? String(currentUser.userId || currentUser.id || '') : '';
+            if (currentUserId && String(user.id) === currentUserId) {
+                alert('Kendi hesabınızı silemezsiniz.');
+                return;
+            }
+
+            if (!confirm(`"${user.fullName}" kullanıcısını devre dışı bırakmak istiyor musunuz?`)) {
+                return;
+            }
+
+            try {
+                await apiCall(`/admin/users/${user.id}`, { method: 'DELETE' });
+                await loadUsers();
+            } catch (error) {
+                alert('Kullanıcı silinirken hata oluştu: ' + error.message);
+            }
         }
     </script>
 </body>

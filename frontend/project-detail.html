@@ -67,6 +67,33 @@
             margin-top: var(--spacing-md);
         }
 
+        .task-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .task-toolbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .task-create-btn {
+            color: #fff !important;
+            background: linear-gradient(135deg, #d97706, #b45309) !important;
+            border-color: #b45309 !important;
+            box-shadow: 0 3px 10px rgba(180, 83, 9, 0.2);
+        }
+
+        .task-create-btn:hover {
+            filter: brightness(1.04);
+        }
+
         .task-item {
             border: 1px solid var(--color-border);
             border-radius: var(--radius-medium);
@@ -152,7 +179,7 @@
 
         .project-meta-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
             gap: var(--spacing-md);
             margin-top: var(--spacing-lg);
             padding-top: var(--spacing-lg);
@@ -160,10 +187,10 @@
         }
 
         .meta-label {
-            font-size: 11px;
+            font-size: 12px;
             text-transform: uppercase;
-            font-weight: 600;
-            color: var(--color-text-subtle);
+            font-weight: 700;
+            color: var(--color-text);
             margin-bottom: 4px;
         }
 
@@ -181,6 +208,119 @@
             margin-bottom: var(--spacing-md);
         }
 
+        .documents-card-header h3 {
+            color: #2563eb;
+        }
+
+        .tasks-card {
+            color: #000;
+        }
+
+        .tasks-card .task-toolbar h3 {
+            color: #166534;
+            font-size: 17px !important;
+        }
+
+        .tasks-card .task-create-btn {
+            color: #fff !important;
+            font-size: 12px !important;
+        }
+
+        .tasks-card #taskSearchInput,
+        .tasks-card #taskFilterSelect {
+            font-size: 13px !important;
+            color: #000 !important;
+        }
+
+        .tasks-card #taskSearchInput::placeholder {
+            color: #000;
+            opacity: 1;
+        }
+
+        .tasks-card .task-list,
+        .tasks-card .task-item,
+        .tasks-card .task-meta,
+        .tasks-card .subtask-list,
+        .tasks-card .subtask-item,
+        .tasks-card #tasksContainer,
+        .tasks-card #tasksContainer span,
+        .tasks-card #tasksContainer label,
+        .tasks-card #tasksContainer input,
+        .tasks-card #tasksContainer select,
+        .tasks-card #tasksContainer textarea {
+            color: #000 !important;
+        }
+
+        .tasks-card .task-title-area strong {
+            font-size: 14px !important;
+            color: #000 !important;
+        }
+
+        .tasks-card .task-meta,
+        .tasks-card .task-meta-item,
+        .tasks-card .task-meta-assignee-text {
+            font-size: 13px !important;
+            color: #000 !important;
+        }
+
+        .tasks-card .task-status-select,
+        .tasks-card .subtask-status-select {
+            font-size: 12px !important;
+            color: #000 !important;
+        }
+
+        .tasks-card #tasksContainer .btn {
+            font-size: 12px !important;
+            color: #000 !important;
+        }
+
+        .tasks-card #tasksContainer .task-inline-save-btn {
+            min-width: 108px;
+            padding: 6px 24px !important;
+            font-size: 14px !important;
+            font-weight: 700;
+            color: #fff !important;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+            border-color: #1d4ed8 !important;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.24);
+        }
+
+        .tasks-card #tasksContainer .task-inline-save-btn:hover {
+            filter: brightness(1.05);
+        }
+
+        .tasks-card #tasksContainer .task-edit-field,
+        .tasks-card #tasksContainer .st-assignee-select,
+        .tasks-card #tasksContainer [id^="st-edit-"] .form-control {
+            font-size: 13px !important;
+            color: #000 !important;
+        }
+
+        .tasks-card .subtask-list > div > span,
+        .tasks-card .subtask-list label,
+        .tasks-card [id^="st-desc-display-"],
+        .tasks-card [id^="subTaskListContent-"] > div,
+        .tasks-card [id^="subTaskListContent-"] span {
+            color: #000 !important;
+        }
+
+        .tasks-card .subtask-item > div:first-child > div:first-child > span {
+            font-size: 14px !important;
+        }
+
+        .tasks-card .subtask-item > div:first-child > div:last-child,
+        .tasks-card .subtask-list > div > span {
+            font-size: 13px !important;
+        }
+
+        .tasks-card .subtask-list label {
+            font-size: 10px !important;
+        }
+
+        .tasks-card [id^="st-desc-display-"] {
+            font-size: 12px !important;
+        }
+
         .document-upload-actions {
             display: flex;
             align-items: center;
@@ -196,21 +336,21 @@
 
         .document-upload-help {
             margin-bottom: var(--spacing-md);
-            font-size: 12px;
+            font-size: 9px;
             color: var(--color-text-subtle);
         }
 
         .project-documents-list {
             display: grid;
-            gap: var(--spacing-sm);
+            gap: 6px;
         }
 
         .project-document-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: var(--spacing-md);
-            padding: 14px 16px;
+            gap: 8px;
+            padding: 8px 10px;
             border: 1px solid var(--color-border);
             border-radius: var(--radius-medium);
             background-color: var(--color-surface);
@@ -219,18 +359,19 @@
         .project-document-main {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
             min-width: 0;
         }
 
         .document-type-badge {
-            min-width: 54px;
-            padding: 6px 10px;
+            min-width: 42px;
+            padding: 3px 6px;
             border-radius: 999px;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 700;
             text-align: center;
-            letter-spacing: 0.04em;
+            letter-spacing: 0.03em;
+            line-height: 1.1;
         }
 
         .document-type-pdf {
@@ -259,23 +400,64 @@
         }
 
         .document-name {
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 600;
             color: var(--color-text);
             word-break: break-word;
+            line-height: 1.25;
         }
 
         .document-meta {
-            margin-top: 4px;
-            font-size: 12px;
+            margin-top: 2px;
+            font-size: 10px;
             color: var(--color-text-subtle);
+            line-height: 1.3;
         }
 
         .document-actions {
             display: flex;
-            gap: 8px;
+            gap: 4px;
             flex-wrap: wrap;
             justify-content: flex-end;
+        }
+
+        .document-action-btn {
+            font-size: 12px !important;
+            padding: 2px 6px !important;
+            line-height: 1.2;
+            color: #fff !important;
+            background: linear-gradient(135deg, #16a34a, #15803d) !important;
+            border-color: #15803d !important;
+            box-shadow: 0 2px 6px rgba(22, 163, 74, 0.18);
+        }
+
+        .document-action-btn-danger {
+            color: #fff !important;
+            background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+            border-color: #dc2626 !important;
+            box-shadow: 0 2px 6px rgba(220, 38, 38, 0.18);
+        }
+
+        .document-select-btn,
+        .document-upload-btn {
+            color: #fff !important;
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12);
+        }
+
+        .document-select-btn {
+            background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+            border-color: #d97706 !important;
+        }
+
+        .document-upload-btn {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+            border-color: #1d4ed8 !important;
+        }
+
+        .document-select-btn:hover,
+        .document-upload-btn:hover,
+        .document-action-btn:hover {
+            filter: brightness(1.04);
         }
 
         .document-empty-state {
@@ -292,20 +474,66 @@
         }
 
         body.project-detail-compact .task-item {
-            margin-bottom: calc(var(--spacing-sm) * var(--project-compact-scale));
+            margin-bottom: 5px;
+            border-radius: 4px;
         }
 
         body.project-detail-compact .task-header {
-            padding: calc(var(--spacing-md) * var(--project-compact-scale));
+            padding: 9px 11px;
+            gap: 12px;
         }
 
         body.project-detail-compact .task-title-area {
-            gap: calc(var(--spacing-md) * var(--project-compact-scale));
+            gap: 8px;
+            min-width: 0;
+            flex: 1 1 auto;
         }
 
         body.project-detail-compact .task-meta {
-            gap: calc(var(--spacing-xl) * var(--project-compact-scale));
-            font-size: 11px;
+            gap: 14px;
+            font-size: 12px;
+            color: #000;
+            margin-left: auto;
+            justify-content: flex-start;
+        }
+
+        body.project-detail-compact .task-meta-item {
+            display: inline-flex;
+            align-items: center;
+            justify-content: flex-start;
+            min-width: 0;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        body.project-detail-compact .task-meta-priority {
+            flex: 0 0 74px;
+        }
+
+        body.project-detail-compact .task-meta-assignee {
+            flex: 0 0 148px;
+            gap: 4px;
+        }
+
+        body.project-detail-compact .task-meta-assignee-text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: #000;
+        }
+
+        body.project-detail-compact .task-meta-date {
+            flex: 0 0 86px;
+            color: #000;
+        }
+
+        body.project-detail-compact .task-meta-progress {
+            flex: 0 0 40px;
+            color: #000;
+        }
+
+        body.project-detail-compact .task-meta-chevron {
+            flex: 0 0 auto;
         }
 
         body.project-detail-compact .subtask-list {
@@ -319,13 +547,15 @@
         }
 
         body.project-detail-compact .project-header-card {
-            margin-bottom: calc(var(--spacing-lg) * var(--project-compact-scale));
+            padding: 13px !important;
+            margin-bottom: 13px;
+            border-radius: 5px;
         }
 
         body.project-detail-compact .project-meta-grid {
-            gap: calc(var(--spacing-md) * var(--project-compact-scale));
-            margin-top: calc(var(--spacing-lg) * var(--project-compact-scale));
-            padding-top: calc(var(--spacing-lg) * var(--project-compact-scale));
+            gap: 9px;
+            margin-top: 13px;
+            padding-top: 13px;
         }
 
         body.project-detail-compact .documents-card-header {
@@ -338,12 +568,27 @@
         }
 
         body.project-detail-compact .project-document-item {
-            gap: calc(var(--spacing-md) * var(--project-compact-scale));
-            padding: 11px 13px;
+            gap: 6px;
+            padding: 6px 8px;
         }
 
         body.project-detail-compact .document-type-badge {
-            padding: 5px 8px;
+            min-width: 38px;
+            padding: 2px 5px;
+            font-size: 9px;
+        }
+
+        body.project-detail-compact .document-name {
+            font-size: 11px;
+        }
+
+        body.project-detail-compact .document-meta {
+            font-size: 9px;
+        }
+
+        body.project-detail-compact .document-action-btn {
+            font-size: 12px !important;
+            padding: 2px 5px !important;
         }
 
         body.project-detail-compact .document-empty-state {
@@ -351,35 +596,42 @@
         }
 
         body.project-detail-compact #projectName {
-            font-size: 20px !important;
+            font-size: 16px !important;
+            line-height: 1.15;
         }
 
         body.project-detail-compact #projectNameInput {
-            font-size: 20px !important;
+            font-size: 16px !important;
             padding: 2px 6px !important;
+            width: 280px !important;
         }
 
         body.project-detail-compact #projectStatusSelect,
         body.project-detail-compact #projectOwnerSelect,
         body.project-detail-compact #projectPrioritySelect {
-            padding: 2px 6px !important;
+            padding: 1px 5px !important;
+            font-size: 11px !important;
         }
 
         body.project-detail-compact #projectDesc {
-            margin-bottom: 13px !important;
-            padding: 3px 6px !important;
-            min-height: 16px !important;
+            margin-bottom: 9px !important;
+            padding: 2px 5px !important;
+            min-height: 14px !important;
+            font-size: 13px !important;
         }
 
         body.project-detail-compact #projectDescInput {
-            margin-bottom: 13px !important;
+            margin-bottom: 9px !important;
             font-size: 13px !important;
+            padding: 4px 6px !important;
         }
 
         body.project-detail-compact #projectOwner,
         body.project-detail-compact #projectDates,
         body.project-detail-compact #projectPriority {
-            padding: 2px 3px !important;
+            padding: 1px 3px !important;
+            font-size: 12px !important;
+            line-height: 1.2;
         }
 
         body.project-detail-compact #projectStartDateInput,
@@ -389,15 +641,44 @@
             padding: 3px 6px !important;
         }
 
+        body.project-detail-compact .task-create-btn {
+            font-size: 12px !important;
+            padding: 3px 9px !important;
+            color: #fff !important;
+        }
+
         body.project-detail-compact .task-status-select,
         body.project-detail-compact .subtask-status-select {
-            padding: 0 5px !important;
-            font-size: 10px !important;
+            padding: 0 4px !important;
+            font-size: 11px !important;
+            color: #000 !important;
         }
 
         body.project-detail-compact #tasksContainer .btn {
-            padding: 2px 6px !important;
-            font-size: 10px !important;
+            padding: 1px 5px !important;
+            font-size: 11px !important;
+            color: #000 !important;
+        }
+
+        body.project-detail-compact #tasksContainer .task-inline-save-btn {
+            min-width: 108px;
+            padding: 6px 24px !important;
+            font-size: 14px !important;
+            color: #fff !important;
+        }
+
+        body.project-detail-compact #tasksContainer .task-row-delete-btn,
+        body.project-detail-compact #tasksContainer .task-meta > .btn.btn-secondary {
+            font-size: 12px !important;
+            color: #000 !important;
+            background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+            border-color: #dc2626 !important;
+            box-shadow: 0 2px 6px rgba(220, 38, 38, 0.16);
+        }
+
+        body.project-detail-compact #tasksContainer .task-row-delete-btn:hover,
+        body.project-detail-compact #tasksContainer .task-meta > .btn.btn-secondary:hover {
+            filter: brightness(1.04);
         }
 
         body.project-detail-compact #tasksContainer .subtask-list > div {
@@ -409,11 +690,68 @@
         body.project-detail-compact #tasksContainer .st-assignee-select,
         body.project-detail-compact #tasksContainer [id^="st-edit-"] .form-control {
             padding: 3px 5px !important;
-            font-size: 11px !important;
+            font-size: 12px !important;
+            color: #000 !important;
         }
 
         body.project-detail-compact #tasksContainer strong {
+            font-size: 11px;
+        }
+
+        body.project-detail-compact .project-header-card>div:first-child>div:first-child {
+            gap: 8px !important;
+            margin-bottom: 6px !important;
+        }
+
+        body.project-detail-compact #projectColorIndicator {
+            width: 12px !important;
+            height: 12px !important;
+            border-radius: 3px !important;
+        }
+
+        body.project-detail-compact .meta-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--color-text);
+            margin-bottom: 3px;
+        }
+
+        body.project-detail-compact .meta-value {
+            font-size: 12px;
+            line-height: 1.2;
+        }
+
+        body.project-detail-compact #projectProgress progress {
+            width: 72px !important;
+            height: 6px !important;
+        }
+
+        body.project-detail-compact #projectProgress span {
+            font-size: 11px;
+        }
+
+        body.project-detail-compact .task-title-area>svg {
+            width: 13px !important;
+            height: 13px !important;
+        }
+
+        body.project-detail-compact .task-title-area strong {
             font-size: 13px;
+            line-height: 1.2;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: #000;
+        }
+
+        body.project-detail-compact .task-meta strong {
+            font-size: 14px !important;
+        }
+
+        body.project-detail-compact .task-meta svg[id^="chevron-"] {
+            width: 13px !important;
+            height: 13px !important;
         }
 
         @media (max-width: 860px) {
@@ -482,16 +820,6 @@
                     <a href="projects.html" class="btn btn-secondary" style="padding: 4px 8px;">&larr; Geri</a>
                     <h1 class="header-title" id="pageTitle">Proje Detayı</h1>
                 </div>
-                <div class="header-actions">
-                    <button class="btn btn-primary" onclick="openTaskModal()">
-                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                        </svg>
-                        Görev Ekle
-                    </button>
-                </div>
             </header>
 
             <div class="content-body">
@@ -511,8 +839,8 @@
                                 <option value="CANCELLED">İptal</option>
                             </select>
                         </div>
-                        <p style="color: var(--color-text-subtle); margin-bottom: 16px; cursor: pointer; padding: 4px 8px; border: 1px dashed transparent; border-radius: 4px; transition: border-color 0.2s; min-height: 20px;" id="projectDesc" title="Düzenlemek için tıklayın" onclick="startEditProjectDesc()">-</p>
-                        <textarea id="projectDescInput" class="form-control" rows="3" style="display: none; margin-bottom: 16px; font-size: 14px; color: var(--color-text-subtle);"></textarea>
+                        <p style="color: var(--color-text); margin-bottom: 16px; cursor: pointer; padding: 4px 8px; border: 1px dashed transparent; border-radius: 4px; transition: border-color 0.2s; min-height: 20px; font-size: 14px;" id="projectDesc" title="Düzenlemek için tıklayın" onclick="startEditProjectDesc()">-</p>
+                        <textarea id="projectDescInput" class="form-control" rows="3" style="display: none; margin-bottom: 16px; font-size: 14px; color: var(--color-text);"></textarea>
 
                         <div class="project-meta-grid">
                             <div>
@@ -544,6 +872,14 @@
                                 </select>
                             </div>
                             <div>
+                                <div class="meta-label">Tahmini Sure</div>
+                                <div class="meta-value" id="projectEstimatedHours">0 saat</div>
+                            </div>
+                            <div>
+                                <div class="meta-label">Ilerleme Yuzdesi</div>
+                                <div class="meta-value" id="projectProgressPercent">%0</div>
+                            </div>
+                            <div>
                                 <div class="meta-label">Tamamlanma</div>
                                 <div class="meta-value" id="projectProgress">-</div>
                             </div>
@@ -555,15 +891,12 @@
                     <div class="documents-card-header">
                         <div>
                             <h3 style="font-size: 16px; margin-bottom: 6px;">Proje Dokumanlari</h3>
-                            <div style="font-size: 13px; color: var(--color-text-subtle);">
-                                Bu projeye PDF, Word, Excel ve JPG/PNG dosyalari ekleyebilirsin. Her dosya en fazla 25 MB olabilir. Yuklenen dosyalar sadece secili projeye baglanir.
-                            </div>
                         </div>
                         <div class="document-upload-actions">
-                            <label for="projectDocumentInput" class="btn btn-secondary">Dosya Sec</label>
+                            <label for="projectDocumentInput" class="btn btn-secondary document-select-btn">Dosya Sec</label>
                             <input type="file" id="projectDocumentInput" multiple
                                 accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png" style="display: none;">
-                            <button class="btn btn-primary" id="uploadProjectDocumentsBtn">Dokuman Yukle</button>
+                            <button class="btn btn-primary document-upload-btn" id="uploadProjectDocumentsBtn">Dokuman Yukle</button>
                         </div>
                     </div>
                     <div class="document-selection-info" id="documentSelectionInfo"></div>
@@ -573,11 +906,18 @@
                 </div>
 
                 <!-- Tasks List -->
-                <div class="card">
-                    <div
-                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <div class="card tasks-card">
+                    <div class="task-toolbar">
                         <h3 style="font-size: 16px;">Görevler</h3>
-                        <div style="display: flex; gap: 8px;">
+                        <div class="task-toolbar-actions">
+                            <button class="btn task-create-btn" type="button" onclick="openTaskModal()">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                Gorev Ekle
+                            </button>
                             <input type="text" class="form-control" placeholder="Görev ara..."
                                 style="width: 200px; padding: 4px 8px;" id="taskSearchInput">
                             <select class="form-control" style="width: 150px; padding: 4px 8px;" id="taskFilterSelect">
@@ -847,6 +1187,14 @@
                 document.getElementById('projectOwner').textContent = project.owner ? project.owner.fullName : 'Atanmadı';
                 document.getElementById('projectDates').textContent = `${formatDate(project.startDate)} - ${formatDate(project.endDate)}`;
                 document.getElementById('projectPriority').innerHTML = getPriorityLabel(project.priority);
+                document.getElementById('projectProgressPercent').textContent = `%${toSafeNumber(project.progressPercent)}`;
+                document.getElementById('projectProgress').innerHTML = toSafeNumber(project.taskCount) > 0
+                    ? `
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <progress value="${toSafeNumber(project.progressPercent)}" max="100" style="width:100px; height:8px;"></progress>
+                            <span>%${toSafeNumber(project.progressPercent)} (${toSafeNumber(project.taskCount)} GÃ¶rev)</span>
+                        </div>`
+                    : '0% (0 GÃ¶rev)';
 
                 // Populate owner select with users
                 populateProjectOwnerSelect(project.owner ? project.owner.id : null);
@@ -906,8 +1254,8 @@
                             </div>
                         </div>
                         <div class="document-actions">
-                            <button class="btn btn-secondary" style="font-size:11px; padding:4px 10px;" onclick='downloadProjectDocument(${document.id}, ${fileNameArg})'>Indir</button>
-                            <button class="btn btn-secondary" style="font-size:11px; padding:4px 10px; color:var(--color-danger); border-color:var(--color-danger);" onclick='deleteProjectDocument(${document.id}, ${fileNameArg})'>Sil</button>
+                            <button class="btn btn-secondary document-action-btn" onclick='downloadProjectDocument(${document.id}, ${fileNameArg})'>Indir</button>
+                            <button class="btn btn-secondary document-action-btn document-action-btn-danger" onclick='deleteProjectDocument(${document.id}, ${fileNameArg})'>Sil</button>
                         </div>
                     </div>
                 `;
@@ -1156,7 +1504,7 @@
                                     <span>${escapeHtml(assignee)}</span>
                                     <span>%${st.completionPercent || 0}</span>
                                     <span>Bit: ${formatDate(st.endDate)}</span>
-                                    <button class="btn btn-secondary" style="font-size:9px; padding:1px 5px; color:var(--color-danger); border-color:var(--color-danger);" onclick="deleteSubTask(${st.id}, ${taskId})" title="Sil">Sil</button>
+                                    <button class="btn btn-secondary task-row-delete-btn" style="font-size:9px; padding:1px 5px; color:var(--color-danger); border-color:var(--color-danger);" onclick="deleteSubTask(${st.id}, ${taskId})" title="Sil">Sil</button>
                                 </div>
                             </div>
                             ${descHtml}
@@ -1268,16 +1616,17 @@
         // Project status select styling and change handler
         function updateStatusSelectStyle(select) {
             const colors = {
-                'PLANNING': { bg: '#DFE1E6', color: '#172B4D' },
-                'IN_PROGRESS': { bg: '#DEEBFF', color: '#0052CC' },
-                'ON_HOLD': { bg: '#FFF0B3', color: '#FF991F' },
-                'COMPLETED': { bg: '#E3FCEF', color: '#00875A' },
-                'CANCELLED': { bg: '#FFEBE6', color: '#DE350B' }
+                'PLANNING': { bg: '#475569', color: '#FFFFFF', border: '#334155', shadow: 'rgba(71, 85, 105, 0.22)' },
+                'IN_PROGRESS': { bg: '#2563EB', color: '#FFFFFF', border: '#1D4ED8', shadow: 'rgba(37, 99, 235, 0.22)' },
+                'ON_HOLD': { bg: '#F59E0B', color: '#FFFFFF', border: '#D97706', shadow: 'rgba(245, 158, 11, 0.24)' },
+                'COMPLETED': { bg: '#16A34A', color: '#FFFFFF', border: '#15803D', shadow: 'rgba(22, 163, 74, 0.22)' },
+                'CANCELLED': { bg: '#DC2626', color: '#FFFFFF', border: '#B91C1C', shadow: 'rgba(220, 38, 38, 0.22)' }
             };
             const style = colors[select.value] || colors['PLANNING'];
             select.style.backgroundColor = style.bg;
             select.style.color = style.color;
-            select.style.borderColor = style.bg;
+            select.style.borderColor = style.border;
+            select.style.boxShadow = `0 3px 10px ${style.shadow}`;
         }
 
         document.getElementById('projectStatusSelect').addEventListener('change', async function () {
@@ -1544,6 +1893,47 @@
 
         // Task search and filter
         let allTasks = [];
+
+        function toSafeNumber(value) {
+            const numericValue = Number(value);
+            return Number.isFinite(numericValue) ? numericValue : 0;
+        }
+
+        function updateProjectTaskSummary() {
+            const taskList = Array.isArray(allTasks) ? allTasks : [];
+            const taskCount = taskList.length;
+            const totalEstimatedHours = taskList.reduce((sum, task) => sum + toSafeNumber(task.estimatedHours), 0);
+            const totalPercent = taskList.reduce((sum, task) => sum + toSafeNumber(task.completionPercent), 0);
+            const averagePercent = taskCount ? Math.round(totalPercent / taskCount) : 0;
+
+            const estimatedHoursEl = document.getElementById('projectEstimatedHours');
+            const progressPercentEl = document.getElementById('projectProgressPercent');
+            const progressEl = document.getElementById('projectProgress');
+
+            if (estimatedHoursEl) {
+                estimatedHoursEl.textContent = `${totalEstimatedHours} saat`;
+            }
+
+            if (progressPercentEl) {
+                progressPercentEl.textContent = `%${averagePercent}`;
+            }
+
+            if (!progressEl) {
+                return;
+            }
+
+            if (!taskCount) {
+                progressEl.textContent = '0% (0 Görev)';
+                return;
+            }
+
+            progressEl.innerHTML = `
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <progress value="${averagePercent}" max="100" style="width:100px; height:8px;"></progress>
+                    <span>%${averagePercent} (${taskCount} Görev)</span>
+                </div>`;
+        }
+
         async function loadTasks() {
             try {
                 const res = await apiCall(`/projects/${projectId}/tasks`);
@@ -1569,6 +1959,8 @@
                     (t.assignee && t.assignee.fullName.toLowerCase().includes(searchTerm))
                 );
             }
+
+            updateProjectTaskSummary();
 
             if (filtered.length === 0) {
                 container.innerHTML = '<div style="text-align:center; color:var(--color-text-subtle); padding: 40px;">Eşleşen görev bulunamadı.</div>';
@@ -1619,12 +2011,12 @@
                             </select>
                         </div>
                         <div class="task-meta">
-                            <span><strong style="color: ${iconColor}; font-size:18px;">•</strong> ${getPriorityLabel(task.priority)}</span>
-                            <span style="display:flex; align-items:center; gap:4px;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> ${escapeHtml(assignee)}</span>
-                            <span>${formatDate(task.endDate)}</span>
-                            <span>%${task.completionPercent || 0}</span>
+                            <span class="task-meta-item task-meta-priority"><strong style="color: ${iconColor}; font-size:18px;">•</strong> ${getPriorityLabel(task.priority)}</span>
+                            <span class="task-meta-item task-meta-assignee"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><span class="task-meta-assignee-text">${escapeHtml(assignee)}</span></span>
+                            <span class="task-meta-item task-meta-date">${formatDate(task.endDate)}</span>
+                            <span class="task-meta-item task-meta-progress">%${task.completionPercent || 0}</span>
                             <button class="btn btn-secondary" style="font-size:10px; padding:2px 6px; color:var(--color-danger); border-color:var(--color-danger);" onclick="deleteTask(${task.id}); event.stopPropagation();" title="Görevi Sil">Sil</button>
-                            <svg id="chevron-${task.id}" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.2s;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            <svg class="task-meta-chevron" id="chevron-${task.id}" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.2s;"><polyline points="6 9 12 15 18 9"></polyline></svg>
                         </div>
                     </div>
                     <div class="subtask-list" id="subtasks-${task.id}">
@@ -1673,7 +2065,7 @@
                                 </div>
                             </div>
                             <div style="margin-top:8px; text-align:right;">
-                                <button class="btn btn-primary" style="font-size:11px; padding:3px 12px;" onclick="saveTaskInline(${task.id})">Kaydet</button>
+                                <button class="btn btn-primary task-inline-save-btn" style="font-size:11px; padding:3px 12px;" onclick="saveTaskInline(${task.id})">Kaydet</button>
                             </div>
                         </div>
                         <!-- Alt Görevler -->
