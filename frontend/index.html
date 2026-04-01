@@ -311,7 +311,7 @@
 
                 <!-- Proje Sorumlusu Section -->
                 <div class="card" style="padding: 16px 18px; margin-top: 14px;">
-                    <h3 style="margin-bottom: 12px; font-size: 14px; font-weight: 600;">Proje Sorumlusu</h3>
+                    <h3 style="margin-bottom: 12px; font-size: 14px; font-weight: 600;">Sorumluya Gore Proje Durumu</h3>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                         <div style="position: relative; height: 280px;" id="ownerChartContainer">
                             <canvas id="ownerChart"></canvas>
@@ -628,25 +628,25 @@
                         labels: owData.map(o => o.ownerName),
                         datasets: [
                             {
-                                label: 'Planlama',
+                                label: 'Planlama Proje',
                                 data: owData.map(o => o.planning),
                                 backgroundColor: '#6554C0',
                                 borderRadius: 2
                             },
                             {
-                                label: 'Devam Eden',
+                                label: 'Devam Eden Proje',
                                 data: owData.map(o => o.inProgress),
                                 backgroundColor: '#0052CC',
                                 borderRadius: 2
                             },
                             {
-                                label: 'Beklemede',
+                                label: 'Beklemede Proje',
                                 data: owData.map(o => o.onHold),
                                 backgroundColor: '#FF991F',
                                 borderRadius: 2
                             },
                             {
-                                label: 'Tamamlandı',
+                                label: 'Tamamlanan Proje',
                                 data: owData.map(o => o.completed),
                                 backgroundColor: '#00875A',
                                 borderRadius: 2
@@ -680,11 +680,11 @@
                         <thead>
                             <tr style="border-bottom:2px solid #dfe1e6; text-align:left;">
                                 <th style="padding:8px 6px; font-weight:600; color:#5e6c84;">Sorumlu</th>
-                                <th style="padding:8px 6px; text-align:center; font-weight:600; color:#6554C0;">Planlama</th>
-                                <th style="padding:8px 6px; text-align:center; font-weight:600; color:#0052CC;">Devam Eden</th>
-                                <th style="padding:8px 6px; text-align:center; font-weight:600; color:#FF991F;">Beklemede</th>
-                                <th style="padding:8px 6px; text-align:center; font-weight:600; color:#00875A;">Tamamlandı</th>
-                                <th style="padding:8px 6px; text-align:center; font-weight:600; color:#172b4d;">Toplam</th>
+                                <th style="padding:8px 6px; text-align:center; font-weight:600; color:#6554C0;">Planlama Proje</th>
+                                <th style="padding:8px 6px; text-align:center; font-weight:600; color:#0052CC;">Devam Eden Proje</th>
+                                <th style="padding:8px 6px; text-align:center; font-weight:600; color:#FF991F;">Beklemede Proje</th>
+                                <th style="padding:8px 6px; text-align:center; font-weight:600; color:#00875A;">Tamamlanan Proje</th>
+                                <th style="padding:8px 6px; text-align:center; font-weight:600; color:#172b4d;">Toplam Proje</th>
                             </tr>
                         </thead>
                         <tbody>`;

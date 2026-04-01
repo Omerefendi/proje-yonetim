@@ -94,6 +94,20 @@
             filter: brightness(1.04);
         }
 
+        .subtask-create-btn {
+            padding: 4px 10px !important;
+            font-size: 12px !important;
+            font-weight: 700;
+            color: #fff !important;
+            background: linear-gradient(135deg, #0f766e, #0ea5a4) !important;
+            border-color: #0f766e !important;
+            box-shadow: 0 3px 10px rgba(15, 118, 110, 0.22);
+        }
+
+        .subtask-create-btn:hover {
+            filter: brightness(1.05);
+        }
+
         .task-item {
             border: 1px solid var(--color-border);
             border-radius: var(--radius-medium);
@@ -177,6 +191,11 @@
             margin-bottom: var(--spacing-lg);
         }
 
+        .documents-card,
+        .tasks-card {
+            padding: 16px 18px;
+        }
+
         .project-meta-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -205,7 +224,7 @@
             justify-content: space-between;
             align-items: flex-start;
             gap: var(--spacing-md);
-            margin-bottom: var(--spacing-md);
+            margin-bottom: 10px;
         }
 
         .documents-card-header h3 {
@@ -214,6 +233,14 @@
 
         .tasks-card {
             color: #000;
+        }
+
+        .tasks-card .task-toolbar {
+            margin-bottom: 10px;
+        }
+
+        .tasks-card .task-list {
+            margin-top: 10px;
         }
 
         .tasks-card .task-toolbar h3 {
@@ -274,10 +301,16 @@
             color: #000 !important;
         }
 
+        .tasks-card #tasksContainer .btn.subtask-create-btn {
+            padding: 4px 10px !important;
+            font-size: 12px !important;
+            color: #fff !important;
+        }
+
         .tasks-card #tasksContainer .task-inline-save-btn {
-            min-width: 108px;
-            padding: 6px 24px !important;
-            font-size: 14px !important;
+            min-width: 76px;
+            padding: 4px 17px !important;
+            font-size: 13px !important;
             font-weight: 700;
             color: #fff !important;
             background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
@@ -294,6 +327,11 @@
         .tasks-card #tasksContainer [id^="st-edit-"] .form-control {
             font-size: 13px !important;
             color: #000 !important;
+        }
+
+        .tasks-card #tasksContainer textarea.task-edit-field[data-field="description"] {
+            font-size: 14px !important;
+            line-height: 1.5;
         }
 
         .tasks-card .subtask-list > div > span,
@@ -552,6 +590,11 @@
             border-radius: 5px;
         }
 
+        body.project-detail-compact .documents-card,
+        body.project-detail-compact .tasks-card {
+            padding: 12px 14px !important;
+        }
+
         body.project-detail-compact .project-meta-grid {
             gap: 9px;
             margin-top: 13px;
@@ -560,7 +603,15 @@
 
         body.project-detail-compact .documents-card-header {
             gap: calc(var(--spacing-md) * var(--project-compact-scale));
-            margin-bottom: calc(var(--spacing-md) * var(--project-compact-scale));
+            margin-bottom: 8px;
+        }
+
+        body.project-detail-compact .tasks-card .task-toolbar {
+            margin-bottom: 8px;
+        }
+
+        body.project-detail-compact .tasks-card .task-list {
+            margin-top: 8px;
         }
 
         body.project-detail-compact .document-selection-info {
@@ -660,10 +711,16 @@
             color: #000 !important;
         }
 
+        body.project-detail-compact #tasksContainer .btn.subtask-create-btn {
+            padding: 3px 9px !important;
+            font-size: 11px !important;
+            color: #fff !important;
+        }
+
         body.project-detail-compact #tasksContainer .task-inline-save-btn {
-            min-width: 108px;
-            padding: 6px 24px !important;
-            font-size: 14px !important;
+            min-width: 76px;
+            padding: 4px 17px !important;
+            font-size: 13px !important;
             color: #fff !important;
         }
 
@@ -692,6 +749,10 @@
             padding: 3px 5px !important;
             font-size: 12px !important;
             color: #000 !important;
+        }
+
+        body.project-detail-compact #tasksContainer textarea.task-edit-field[data-field="description"] {
+            font-size: 13px !important;
         }
 
         body.project-detail-compact #tasksContainer strong {
@@ -887,7 +948,7 @@
                     </div>
                 </div>
 
-                <div class="card">
+                <div class="card documents-card">
                     <div class="documents-card-header">
                         <div>
                             <h3 style="font-size: 16px; margin-bottom: 6px;">Proje Dokumanlari</h3>
@@ -1262,6 +1323,14 @@
             });
 
             container.innerHTML = html;
+            styleAllStatusSelects();
+            allTasks.forEach(task => {
+                const select = document.querySelector(`.task-assignee-select[data-task-id="${task.id}"]`);
+                if (select) {
+                    select.dataset.current = task.assignee ? task.assignee.id : '';
+                }
+            });
+            populateInlineAssigneeSelects('#tasksContainer');
         }
 
         function handleDocumentSelectionChange() {
@@ -1549,6 +1618,8 @@
                     `;
                 });
                 container.innerHTML = html;
+                document.querySelectorAll(`#subTaskListContent-${taskId} .subtask-status-select`).forEach(applyStatusSelectStyle);
+                populateInlineAssigneeSelects(`#subTaskListContent-${taskId}`);
             } catch (error) {
                 container.innerHTML = '<div style="color:var(--color-danger); font-size:12px;">Yüklenirken hata oluştu.</div>';
             }
@@ -2022,7 +2093,10 @@
                     <div class="subtask-list" id="subtasks-${task.id}">
                         <!-- Görev Detay Düzenleme -->
                         <div style="padding: 12px 0; border-bottom: 1px solid var(--color-border);">
-                            <span style="font-size:12px; font-weight:600; color:var(--color-text-subtle);">GÖREV DETAYLARI</span>
+                            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+                                <span style="font-size:12px; font-weight:600; color:var(--color-text-subtle);">GÖREV DETAYLARI</span>
+                                <button class="btn btn-primary task-inline-save-btn" onclick="saveTaskInline(${task.id})">Kaydet</button>
+                            </div>
                             <div style="margin-top:8px; display:grid; grid-template-columns:1fr 1fr; gap:8px;">
                                 <div>
                                     <label style="font-size:10px; font-weight:600; color:var(--color-text-subtle); text-transform:uppercase;">Açıklama</label>
@@ -2064,14 +2138,11 @@
                                     <input type="number" class="form-control task-edit-field" data-task-id="${task.id}" data-field="estimatedHours" min="0" value="${task.estimatedHours || ''}" style="font-size:12px; padding:4px 6px; margin-top:2px;">
                                 </div>
                             </div>
-                            <div style="margin-top:8px; text-align:right;">
-                                <button class="btn btn-primary task-inline-save-btn" style="font-size:11px; padding:3px 12px;" onclick="saveTaskInline(${task.id})">Kaydet</button>
-                            </div>
                         </div>
                         <!-- Alt Görevler -->
                         <div style="padding: 12px 0; border-bottom: 1px solid var(--color-border); display:flex; justify-content:space-between; align-items:center;">
                             <span style="font-size:12px; font-weight:600; color:var(--color-text-subtle);">ALT GÖREVLER</span>
-                            <button class="btn btn-secondary" style="font-size:11px; padding: 2px 6px;" onclick="openSubTaskModal(${task.id})">+ Alt Görev</button>
+                            <button class="btn subtask-create-btn" onclick="openSubTaskModal(${task.id})">+ Alt Görev</button>
                         </div>
                         <div id="subTaskListContent-${task.id}" style="padding-top: 8px;">
                             <div style="font-size:12px; color:var(--color-text-subtle); padding:8px 0;">Yükleniyor...</div>
@@ -2104,13 +2175,6 @@
             document.querySelectorAll('.task-status-select, .subtask-status-select').forEach(applyStatusSelectStyle);
         }
 
-        // Override renderFilteredTasks to apply styles after render
-        const origRender = renderFilteredTasks;
-        renderFilteredTasks = function () {
-            origRender();
-            styleAllStatusSelects();
-        };
-
         async function changeTaskStatus(select) {
             const taskId = select.dataset.taskId;
             const newStatus = select.value;
@@ -2142,15 +2206,6 @@
                 alert('Alt görev durumu güncellenirken hata: ' + error.message);
             }
         }
-
-        // Also style subtask selects and populate assignee dropdowns after loading subtasks
-        const origLoadSubTasks = loadSubTasks;
-        loadSubTasks = async function (taskId) {
-            await origLoadSubTasks(taskId);
-            document.querySelectorAll(`#subTaskListContent-${taskId} .subtask-status-select`).forEach(applyStatusSelectStyle);
-            // Populate subtask assignee selects
-            populateInlineAssigneeSelects(`#subTaskListContent-${taskId}`);
-        };
 
         // Inline save for task details
         async function saveTaskInline(taskId) {
@@ -2213,20 +2268,6 @@
                 });
             });
         }
-
-        // Override renderFilteredTasks to also populate assignee selects
-        const origRender2 = renderFilteredTasks;
-        renderFilteredTasks = function () {
-            origRender2();
-            // Populate task inline assignee dropdowns
-            allTasks.forEach(task => {
-                const select = document.querySelector(`.task-assignee-select[data-task-id="${task.id}"]`);
-                if (select) {
-                    select.dataset.current = task.assignee ? task.assignee.id : '';
-                }
-            });
-            populateInlineAssigneeSelects('#tasksContainer');
-        };
 
         // Toggle subtask inline edit form
         function toggleSubTaskEdit(stId) {

@@ -10,6 +10,7 @@ let currentWorkloadRows = [];
 let workloadInitialized = false;
 let loadProjectsPromise = null;
 let hasWorkloadQuery = false;
+const WORKLOAD_IDLE_HINT = 'Filtreleri ayarlayip Sorgula ile listeleyin. Personel secilmezse sadece gorevi ve is yuku olan personeller listelenir.';
 
 const workloadElements = {
     personFilter: null,
@@ -140,7 +141,7 @@ function bindWorkloadEvents() {
                     return;
                 }
 
-                setWorkloadQueryState('Filtreleri ayarlayip Sorgula ile listeleyin. Personel secilmezse tum personeller listelenir.');
+                setWorkloadQueryState(WORKLOAD_IDLE_HINT);
             });
         });
 }
@@ -244,7 +245,7 @@ async function loadWorkloadReport() {
         const response = await apiCall(`/projects/workload-report${query ? `?${query}` : ''}`);
         const report = response.data || {};
 
-        currentWorkloadRows = Array.isArray(report.rows) ? report.rows : [];
+        currentWorkloadRows = normalizeWorkloadRows(report.rows);
         hasWorkloadQuery = true;
         renderVisibleWorkload();
         setWorkloadQueryState(`Sorgu tamamlandi: ${buildQueryStateLabel()}`);
@@ -261,7 +262,19 @@ async function loadWorkloadReport() {
     }
 }
 
-function renderWorkloadIdleState(message = 'Filtreleri ayarlayip Sorgula ile listeleyin. Personel secilmezse tum personeller listelenir.') {
+function normalizeWorkloadRows(rows) {
+    return (Array.isArray(rows) ? rows : []).filter((row) => {
+        const totalItems = safeNumber(row && row.totalItemCount);
+        const taskCount = safeNumber(row && row.taskCount);
+        const subTaskCount = safeNumber(row && row.subTaskCount);
+        const taskDetails = Array.isArray(row && row.taskDetails) ? row.taskDetails.length : 0;
+        const subTaskDetails = Array.isArray(row && row.subTaskDetails) ? row.subTaskDetails.length : 0;
+
+        return totalItems > 0 || taskCount > 0 || subTaskCount > 0 || taskDetails > 0 || subTaskDetails > 0;
+    });
+}
+
+function renderWorkloadIdleState(message = WORKLOAD_IDLE_HINT) {
     hasWorkloadQuery = false;
     currentWorkloadRows = [];
     renderWorkloadSummary([]);
@@ -270,7 +283,7 @@ function renderWorkloadIdleState(message = 'Filtreleri ayarlayip Sorgula ile lis
         workloadElements.tableBody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--color-text-subtle);">${escapeHtml(message)}</td></tr>`;
     }
 
-    setWorkloadQueryState('Filtreleri ayarlayip Sorgula ile listeleyin. Personel secilmezse tum personeller listelenir.');
+    setWorkloadQueryState(WORKLOAD_IDLE_HINT);
     setWorkloadVisibleState('Henuz sonuc listelenmiyor.');
 }
 
@@ -336,8 +349,8 @@ function renderWorkloadSummary(rows) {
         },
         {
             label: 'Toplam Saat',
-            value: summary.totalEstimatedHours,
-            note: `${summary.averageCompletionPercent}% ortalama ilerleme`
+            value: formatHourValue(summary.totalEstimatedHours),
+            note: `tahmini tamamlanan ${formatHourValue(summary.completedEstimatedHours)} saat`
         },
         {
             label: 'Iptal',
@@ -378,6 +391,7 @@ function computeVisibleSummary(rows) {
         completedItemCount: list.reduce((sum, row) => sum + safeNumber(row.completedItemCount), 0),
         cancelledItemCount: list.reduce((sum, row) => sum + safeNumber(row.cancelledItemCount), 0),
         totalEstimatedHours: list.reduce((sum, row) => sum + safeNumber(row.totalEstimatedHours), 0),
+        completedEstimatedHours: list.reduce((sum, row) => sum + calculateCompletedEstimatedHours(row), 0),
         averageCompletionPercent: list.length ? Math.round(totalCompletionSum / list.length) : 0
     };
 }
@@ -445,7 +459,7 @@ function renderWorkloadTable(rows) {
                 </td>
                 <td>
                     <span class="workload-count">${safeNumber(row.totalEstimatedHours)}</span>
-                    <span class="workload-count-note">tamamlanan ${safeNumber(row.completedItemCount)}</span>
+                    <span class="workload-count-note">tahmini tamamlanan ${formatHourValue(calculateCompletedEstimatedHours(row))} saat</span>
                 </td>
                 <td>
                     <span class="workload-count">%${safeNumber(row.averageCompletionPercent)}</span>
@@ -670,8 +684,8 @@ function buildWorkloadPrintDocument(rows) {
                 </div>
                 <div class="report-summary-card">
                     <div class="report-summary-label">Toplam Saat</div>
-                    <div class="report-summary-value">${escapeHtml(String(summary.totalEstimatedHours))}</div>
-                    <div class="report-summary-note">${escapeHtml(`${summary.averageCompletionPercent}% ortalama ilerleme`)}</div>
+                    <div class="report-summary-value">${escapeHtml(formatHourValue(summary.totalEstimatedHours))}</div>
+                    <div class="report-summary-note">${escapeHtml(`tahmini tamamlanan ${formatHourValue(summary.completedEstimatedHours)} saat`)}</div>
                 </div>
                 <div class="report-summary-card">
                     <div class="report-summary-label">Iptal</div>
@@ -726,7 +740,7 @@ function renderWorkloadPrintTable(rows) {
                             <td>${safeNumber(row.taskCount)} / ${safeNumber(row.taskEstimatedHours)} saat</td>
                             <td>${safeNumber(row.subTaskCount)} / ${safeNumber(row.subTaskEstimatedHours)} saat</td>
                             <td>${safeNumber(row.openItemCount)} / ${safeNumber(row.totalItemCount)} toplam</td>
-                            <td>${safeNumber(row.totalEstimatedHours)}</td>
+                            <td>${escapeHtml(`${formatHourValue(row.totalEstimatedHours)} / tahmini tamamlanan ${formatHourValue(calculateCompletedEstimatedHours(row))} saat`)}</td>
                             <td>%${safeNumber(row.averageCompletionPercent)}</td>
                             <td>${escapeHtml(renderWorkloadPrintStatusText(row))}</td>
                         </tr>
@@ -748,6 +762,49 @@ function renderWorkloadPrintStatusText(row) {
         .map((entry) => `${entry[0]}: ${safeNumber(entry[1])}`);
 
     return entries.length ? entries.join(' | ') : 'Kayit yok';
+}
+
+function calculateCompletedEstimatedHours(row) {
+    const items = [
+        ...(Array.isArray(row && row.taskDetails) ? row.taskDetails : []),
+        ...(Array.isArray(row && row.subTaskDetails) ? row.subTaskDetails : [])
+    ];
+
+    const total = items.reduce((sum, item) => {
+        const estimatedHours = safeNumber(item && item.estimatedHours);
+        const completionPercent = clampPercentage(item && item.completionPercent);
+        return sum + ((estimatedHours * completionPercent) / 100);
+    }, 0);
+
+    return Math.round(total * 10) / 10;
+}
+
+function clampPercentage(value) {
+    const numericValue = safeNumber(value);
+
+    if (numericValue < 0) {
+        return 0;
+    }
+
+    if (numericValue > 100) {
+        return 100;
+    }
+
+    return numericValue;
+}
+
+function formatHourValue(value) {
+    const numericValue = Number(value);
+
+    if (!Number.isFinite(numericValue)) {
+        return '0';
+    }
+
+    const hasFraction = Math.abs(numericValue % 1) > 0.001;
+    return new Intl.NumberFormat('tr-TR', {
+        minimumFractionDigits: hasFraction ? 1 : 0,
+        maximumFractionDigits: 1
+    }).format(numericValue);
 }
 
 function buildQueryStateLabel() {

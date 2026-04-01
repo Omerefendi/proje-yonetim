@@ -82,21 +82,28 @@ public class DashboardController {
             long completedTasks2 = taskRepository.countByAssigneeAndStatus(user, Task.Status.COMPLETED);
             long completedSubTasks = subTaskRepository.countByAssigneeAndStatus(user, Task.Status.COMPLETED);
 
-            workload.put("todo", todoTasks + todoSubTasks);
-            workload.put("inProgress", inProgressTasks + inProgressSubTasks);
-            workload.put("inReview", inReviewTasks + inReviewSubTasks);
-            workload.put("completed", completedTasks2 + completedSubTasks);
+            long todoTotal = todoTasks + todoSubTasks;
+            long inProgressTotal = inProgressTasks + inProgressSubTasks;
+            long inReviewTotal = inReviewTasks + inReviewSubTasks;
+            long completedTotal = completedTasks2 + completedSubTasks;
+
+            workload.put("todo", todoTotal);
+            workload.put("inProgress", inProgressTotal);
+            workload.put("inReview", inReviewTotal);
+            workload.put("completed", completedTotal);
 
             // Totals
             long taskCount = taskRepository.countOpenTasksByUser(user, excludeStatuses);
             long subTaskCount = subTaskRepository.countOpenSubTasksByUser(user, excludeStatuses);
+            long totalAll = todoTotal + inProgressTotal + inReviewTotal + completedTotal;
+
             workload.put("openTasks", taskCount);
             workload.put("openSubTasks", subTaskCount);
             workload.put("totalOpen", taskCount + subTaskCount);
-            workload.put("totalAll", todoTasks + todoSubTasks + inProgressTasks + inProgressSubTasks
-                    + inReviewTasks + inReviewSubTasks + completedTasks2 + completedSubTasks);
+            workload.put("totalAll", totalAll);
             return workload;
-        }).collect(Collectors.toList());
+        }).filter(workload -> ((Number) workload.get("totalAll")).longValue() > 0)
+                .collect(Collectors.toList());
 
         stats.put("userWorkloads", userWorkloads);
         stats.put("totalUsers", users.size());
